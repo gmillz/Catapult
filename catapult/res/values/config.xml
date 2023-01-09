@@ -2,4 +2,7 @@
 <resources>
     <dimen name="hotseat_qsb_space_default">36.0</dimen>
     <dimen name="hotseat_qsb_space_no_qsb">0.0</dimen>
+
+    <string name="wallpaper_picker_package" translatable="false">com.android.wallpaper</string>
+    <string name="wallpaper_picker_package_google" translatable="false">com.google.android.apps.wallpaper</string>
 </resources>

@@ -27,9 +27,9 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -180,9 +180,10 @@ public class OptionsPopupView extends ArrowPopup<Launcher>
      */
     public static ArrayList<OptionItem> getOptions(Launcher launcher) {
         ArrayList<OptionItem> options = new ArrayList<>();
-        int resString = Utilities.existsStyleWallpapers(launcher) ?
+        boolean showStyleWallpapers = Utilities.showStyleWallpapers(launcher);
+        int resString = showStyleWallpapers ?
                 R.string.styles_wallpaper_button_text : R.string.wallpaper_button_text;
-        int resDrawable = Utilities.existsStyleWallpapers(launcher) ?
+        int resDrawable = showStyleWallpapers ?
                 R.drawable.ic_palette : R.drawable.ic_wallpaper;
         options.add(new OptionItem(launcher,
                 resString,
@@ -251,14 +252,15 @@ public class OptionsPopupView extends ArrowPopup<Launcher>
                 .putExtra(EXTRA_WALLPAPER_OFFSET,
                         launcher.getWorkspace().getWallpaperOffsetForCenterPage())
                 .putExtra(EXTRA_WALLPAPER_LAUNCH_SOURCE, "app_launched_launcher");
-        if (!Utilities.existsStyleWallpapers(launcher)) {
+        if (!Utilities.showStyleWallpapers(launcher)) {
             intent.putExtra(EXTRA_WALLPAPER_FLAVOR, "wallpaper_only");
         } else {
             intent.putExtra(EXTRA_WALLPAPER_FLAVOR, "focus_wallpaper");
         }
-        String pickerPackage = launcher.getString(R.string.wallpaper_picker_package);
-        if (!TextUtils.isEmpty(pickerPackage)) {
-            intent.setPackage(pickerPackage);
+        if (Utilities.existsStyleWallpapersGoogle(launcher)) {
+            intent.setPackage(launcher.getString(R.string.wallpaper_picker_package_google));
+        } else if (Utilities.existsStyleWallpapers(launcher)) {
+            intent.setPackage(launcher.getString(R.string.wallpaper_picker_package));
         }
         return launcher.startActivitySafely(v, intent, placeholderInfo(intent));
     }

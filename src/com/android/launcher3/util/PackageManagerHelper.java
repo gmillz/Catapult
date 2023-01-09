@@ -118,7 +118,12 @@ public class PackageManagerHelper {
     public ApplicationInfo getApplicationInfo(@NonNull final String packageName,
             @NonNull final UserHandle user, final int flags) {
         try {
-            ApplicationInfo info = mLauncherApps.getApplicationInfo(packageName, flags, user);
+            ApplicationInfo info = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                info = mLauncherApps.getApplicationInfo(packageName, flags, user);
+            } else {
+                info = mContext.getPackageManager().getApplicationInfo(packageName, flags);
+            }
             return (info.flags & ApplicationInfo.FLAG_INSTALLED) == 0 || !info.enabled
                     ? null : info;
         } catch (PackageManager.NameNotFoundException e) {
@@ -219,6 +224,12 @@ public class PackageManagerHelper {
                 new ComponentName(context.getString(R.string.wallpaper_picker_package),
                     context.getString(R.string.custom_activity_picker)
                 ));
+    }
+
+    public static Intent getStyleWallpapersGoogleIntent(Context context) {
+        return new Intent(Intent.ACTION_SET_WALLPAPER).setComponent(
+                new ComponentName(context.getString(R.string.wallpaper_picker_package_google),
+                        "com.android.customization.picker.CustomizationPickerActivity"));
     }
 
     /**
