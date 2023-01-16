@@ -17,5 +17,6 @@
     <string name="customize_button_text">Customize</string>
     <string name="select_icon">Select Icon</string>
     <string name="system_icons">System icons</string>
+    <string name="feed_provider_title">Feed provider</string>
 
 </resources>

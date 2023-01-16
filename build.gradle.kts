@@ -27,6 +27,7 @@ android {
 
     buildFeatures {
         compose = true
+        aidl = true
     }
 
     composeOptions {
@@ -73,6 +74,7 @@ android {
 
     sourceSets.getByName("catapult") {
         manifest.srcFile("catapult/AndroidManifest.xml")
+        aidl.setSrcDirs(listOf("catapult/aidl"))
         res.setSrcDirs(listOf("catapult/res"))
         java.setSrcDirs(listOf("catapult/src"))
     }

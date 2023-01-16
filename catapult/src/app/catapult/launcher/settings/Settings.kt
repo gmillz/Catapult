@@ -34,6 +34,18 @@ class Settings(context: Context): BaseSettings(context) {
         onSet = { reloadIdp() }
     )
 
+    val enableFeed = setting(
+        key = booleanPreferencesKey("enable_feed"),
+        defaultValue = true,
+        onSet = { recreate() }
+    )
+
+    val feedProvider = setting(
+        key = stringPreferencesKey("feed_provider"),
+        defaultValue = ""
+    )
+
+
     companion object {
         @JvmField
         val INSTANCE = MainThreadInitializedObject(::Settings)

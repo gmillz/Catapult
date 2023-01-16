@@ -5,4 +5,9 @@
 
     <string name="wallpaper_picker_package" translatable="false">com.android.wallpaper</string>
     <string name="wallpaper_picker_package_google" translatable="false">com.google.android.apps.wallpaper</string>
+
+    <integer name="bridge_signature_hash">0xB662CC2F</integer>
+    <string name="bridge_version" translatable="false">v3</string>
+    <integer name="lawnfeed_signature_hash">0x60E8FB7D</integer>
+
 </resources>

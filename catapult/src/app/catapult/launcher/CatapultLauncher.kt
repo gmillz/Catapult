@@ -30,6 +30,7 @@ import com.android.launcher3.R
 import com.android.launcher3.model.data.ItemInfoWithIcon
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
+import com.android.systemui.plugins.shared.LauncherOverlayManager
 import kotlinx.coroutines.runBlocking
 import java.util.stream.Stream
 
@@ -37,6 +38,9 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         ActivityResultRegistryOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
+
+    private val defaultOverlay by lazy { OverlayCallbackImpl(this) }
+
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
     override val savedStateRegistry = savedStateRegistryController.savedStateRegistry
     override fun getLifecycle() = lifecycleRegistry
@@ -185,6 +189,10 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
             super.getSupportedShortcuts(),
             Stream.of(CatapultShortcut.CUSTOMIZE)
         )
+    }
+
+    override fun getDefaultOverlay(): LauncherOverlayManager {
+        return defaultOverlay
     }
 
     private fun restartIfPending() {
