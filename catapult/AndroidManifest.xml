@@ -26,6 +26,7 @@
     -->
 
     <application
+        android:name="app.catapult.launcher.CatapultApp"
         android:backupAgent="com.android.launcher3.LauncherBackupAgent"
         android:fullBackupOnly="true"
         android:fullBackupContent="@xml/backupscheme"

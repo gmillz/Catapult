@@ -7,8 +7,8 @@ import app.catapult.launcher.settings.Settings
 class CatapultApp: Application() {
 
     override fun onCreate() {
-        super.onCreate()
         app = this
+        super.onCreate()
     }
 
     override fun onTerminate() {
