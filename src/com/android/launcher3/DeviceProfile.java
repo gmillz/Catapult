@@ -561,17 +561,18 @@ public class DeviceProfile {
 
     /** Updates hotseatCellHeightPx and hotseatBarSizePx */
     private void updateHotseatSizes(int hotseatIconSizePx) {
+        int rows = CatapultAppKt.getSettings().getTwoRowDockEnabled().firstBlocking() ? 2 : 1;
         // Ensure there is enough space for folder icons, which have a slightly larger radius.
-        hotseatCellHeightPx = (int) Math.ceil(hotseatIconSizePx * ICON_OVERLAP_FACTOR);
+        hotseatCellHeightPx = (int) Math.ceil((hotseatIconSizePx * rows) * ICON_OVERLAP_FACTOR);
 
         if (isVerticalBarLayout()) {
-            hotseatBarSizePx = hotseatIconSizePx + hotseatBarSidePaddingStartPx
+            hotseatBarSizePx = (hotseatIconSizePx * rows) + hotseatBarSidePaddingStartPx
                     + hotseatBarSidePaddingEndPx;
         } else if (isQsbInline) {
-            hotseatBarSizePx = Math.max(hotseatIconSizePx, hotseatQsbVisualHeight)
+            hotseatBarSizePx = Math.max((hotseatIconSizePx * rows), hotseatQsbVisualHeight)
                     + hotseatBarBottomSpacePx;
         } else {
-            hotseatBarSizePx = hotseatIconSizePx
+            hotseatBarSizePx = (hotseatIconSizePx * rows)
                     + hotseatQsbSpace
                     + hotseatQsbVisualHeight
                     + hotseatBarBottomSpacePx;

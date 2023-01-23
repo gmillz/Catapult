@@ -555,6 +555,7 @@ public class GridSizeMigrationTaskV2 {
                     switch (entry.itemType) {
                         case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
                         case LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT:
+                        case LauncherSettings.Favorites.ITEM_TYPE_CUSTOM_APPWIDGET:
                         case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION: {
                             entry.mIntent = c.getString(indexIntent);
                             verifyIntent(c.getString(indexIntent));

@@ -73,14 +73,16 @@ public class Hotseat extends CellLayout implements Insettable {
      * Returns orientation specific cell X given invariant order in the hotseat
      */
     public int getCellXFromOrder(int rank) {
-        return mHasVerticalHotseat ? 0 : rank;
+        int size = mHasVerticalHotseat ? getCountY() : getCountX();
+        return mHasVerticalHotseat ? rank / size : rank % size;
     }
 
     /**
      * Returns orientation specific cell Y given invariant order in the hotseat
      */
     public int getCellYFromOrder(int rank) {
-        return mHasVerticalHotseat ? (getCountY() - (rank + 1)) : 0;
+        int size = mHasVerticalHotseat ? getCountY() : getCountX();
+        return mHasVerticalHotseat ? (getCountY() - ((rank % size) + 1)) : rank / size;
     }
 
     public void resetLayout(boolean hasVerticalHotseat) {
@@ -88,10 +90,11 @@ public class Hotseat extends CellLayout implements Insettable {
         mHasVerticalHotseat = hasVerticalHotseat;
         DeviceProfile dp = mActivity.getDeviceProfile();
         resetCellSize(dp);
+        int rows = CatapultAppKt.getSettings().getTwoRowDockEnabled().firstBlocking()? 2 : 1;
         if (hasVerticalHotseat) {
-            setGridSize(1, dp.numShownHotseatIcons);
+            setGridSize(rows, dp.numShownHotseatIcons);
         } else {
-            setGridSize(dp.numShownHotseatIcons, 1);
+            setGridSize(dp.numShownHotseatIcons, rows);
         }
     }
 

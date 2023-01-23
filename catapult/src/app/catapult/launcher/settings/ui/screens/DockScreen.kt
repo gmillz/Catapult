@@ -22,6 +22,10 @@ fun DockScreen() {
                 controller = settings.dockSearchBarEnabled.getController(),
                 label = stringResource(id = R.string.dock_search_bar_enabled_title)
             )
+            SettingSwitch(
+                controller = settings.twoRowDockEnabled.getController(),
+                label = stringResource(id = R.string.two_row_dock_title)
+            )
         }
     }
 }

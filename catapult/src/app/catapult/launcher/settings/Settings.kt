@@ -15,6 +15,13 @@ class Settings(context: Context): BaseSettings(context) {
         defaultValue = true,
         onSet = { recreate() }
     )
+
+    val twoRowDockEnabled = setting(
+        key = booleanPreferencesKey("dock_two_row_enabled"),
+        defaultValue = false,
+        onSet = { recreate() }
+    )
+
     companion object {
         @JvmField
         val INSTANCE = MainThreadInitializedObject(::Settings)

@@ -102,11 +102,17 @@ public class ModelWriter {
         // We store hotseat items in canonical form which is this orientation invariant position
         // in the hotseat
         if (container == Favorites.CONTAINER_HOTSEAT) {
-            item.screenId = mHasVerticalHotseat
-                    ? LauncherAppState.getIDP(mContext).numDatabaseHotseatIcons - cellY - 1 : cellX;
+            item.screenId = item.screenId = getOrderInHotseat(cellX, cellY,
+                    LauncherAppState.getIDP(mContext).numDatabaseHotseatIcons);
         } else {
             item.screenId = screenId;
         }
+    }
+
+    private int getOrderInHotseat(int x, int y, int size) {
+        int xOrder = mHasVerticalHotseat ? (size - y - 1) : x;
+        int yOrder = mHasVerticalHotseat ? x : y;
+        return xOrder + yOrder * size;
     }
 
     /**
