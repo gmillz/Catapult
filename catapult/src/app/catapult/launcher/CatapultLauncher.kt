@@ -2,12 +2,17 @@ package app.catapult.launcher
 
 import android.os.Bundle
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.android.launcher3.Launcher
+import com.android.launcher3.LauncherRootView
+import com.android.launcher3.R
 
-class CatapultLauncher: Launcher(), SavedStateRegistryOwner {
+class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
@@ -19,6 +24,13 @@ class CatapultLauncher: Launcher(), SavedStateRegistryOwner {
         super.onCreate(savedInstanceState)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         launcher = this
+    }
+
+    override fun setupViews() {
+        super.setupViews()
+        val launcherRootView = findViewById<LauncherRootView>(R.id.launcher)
+        ViewTreeLifecycleOwner.set(launcherRootView, this)
+        launcherRootView.setViewTreeSavedStateRegistryOwner(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
