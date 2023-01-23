@@ -192,6 +192,15 @@ public class LauncherPreviewRenderer extends ContextWrapper
             InvariantDeviceProfile idp,
             WallpaperColors wallpaperColorsOverride,
             @Nullable final SparseArray<Size> launcherWidgetSpanInfo) {
+        this(context, idp, wallpaperColorsOverride, launcherWidgetSpanInfo, false);
+
+    }
+
+    public LauncherPreviewRenderer(Context context,
+                                   InvariantDeviceProfile idp,
+                                   WallpaperColors wallpaperColorsOverride,
+                                   @Nullable final SparseArray<Size> launcherWidgetSpanInfo,
+                                   boolean dummyInsets) {
 
         super(context);
         mUiHandler = new Handler(Looper.getMainLooper());
@@ -208,13 +217,19 @@ public class LauncherPreviewRenderer extends ContextWrapper
             mDpOrig = mDp;
         }
 
-        WindowInsets currentWindowInsets = context.getSystemService(WindowManager.class)
-                .getCurrentWindowMetrics().getWindowInsets();
-        mInsets = new Rect(
-                currentWindowInsets.getSystemWindowInsetLeft(),
-                currentWindowInsets.getSystemWindowInsetTop(),
-                currentWindowInsets.getSystemWindowInsetRight(),
-                mDp.isTaskbarPresent ? 0 : currentWindowInsets.getSystemWindowInsetBottom());
+        if (!dummyInsets) {
+            WindowInsets currentWindowInsets = context.getSystemService(WindowManager.class)
+                    .getCurrentWindowMetrics().getWindowInsets();
+            mInsets = new Rect(
+                    currentWindowInsets.getSystemWindowInsetLeft(),
+                    currentWindowInsets.getSystemWindowInsetTop(),
+                    currentWindowInsets.getSystemWindowInsetRight(),
+                    mDp.isTaskbarPresent ? 0 : currentWindowInsets.getSystemWindowInsetBottom());
+        } else {
+            mInsets = new Rect();
+            mInsets.left = mInsets.right = (mDp.widthPx - mDp.availableWidthPx) / 2;
+            mInsets.top = mInsets.bottom = (mDp.heightPx - mDp.availableHeightPx) / 2;
+        }
         mDp.updateInsets(mInsets);
 
         BaseIconFactory iconFactory =

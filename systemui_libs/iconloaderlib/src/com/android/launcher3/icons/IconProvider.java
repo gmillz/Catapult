@@ -73,8 +73,8 @@ public class IconProvider {
     private static final String SYSTEM_STATE_SEPARATOR = " ";
 
     protected final Context mContext;
-    private final ComponentName mCalendar;
-    private final ComponentName mClock;
+    protected final ComponentName mCalendar;
+    protected final ComponentName mClock;
 
     public IconProvider(Context context) {
         mContext = context;
@@ -98,7 +98,8 @@ public class IconProvider {
      * Loads the icon for the provided LauncherActivityInfo
      */
     public Drawable getIcon(LauncherActivityInfo info, int iconDpi) {
-        return getIconWithOverrides(info.getApplicationInfo().packageName, iconDpi,
+        return getIconWithOverrides(info.getApplicationInfo().packageName,
+                info.getName(), iconDpi,
                 () -> info.getIcon(iconDpi));
     }
 
@@ -113,12 +114,13 @@ public class IconProvider {
      * Loads the icon for the provided activity info
      */
     public Drawable getIcon(ActivityInfo info, int iconDpi) {
-        return getIconWithOverrides(info.applicationInfo.packageName, iconDpi,
+        return getIconWithOverrides(info.applicationInfo.packageName,
+                info.name, iconDpi,
                 () -> loadActivityInfoIcon(info, iconDpi));
     }
 
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
-    private Drawable getIconWithOverrides(String packageName, int iconDpi,
+    protected Drawable getIconWithOverrides(String packageName, String component, int iconDpi,
             Supplier<Drawable> fallback) {
         ThemeData td = getThemeDataForPackage(packageName);
 
@@ -228,7 +230,7 @@ public class IconProvider {
     /**
      * @return Today's day of the month, zero-indexed.
      */
-    private static int getDay() {
+    protected static int getDay() {
         return Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1;
     }
 

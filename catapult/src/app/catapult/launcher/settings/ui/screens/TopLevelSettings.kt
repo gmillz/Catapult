@@ -13,7 +13,10 @@ import com.gmillz.compose.settings.ui.components.SettingsPage
 import com.gmillz.compose.settings.util.LocalNavController
 
 val topLevelScreens = listOf(
-    SettingsScreen("general", R.string.general_title) {
+    SettingsScreen(
+        route = "general",
+        screens = generalScreens
+    ) {
         GeneralScreen()
     },
     SettingsScreen("homescreen", R.string.homescreen_title) {

@@ -2,6 +2,7 @@ package app.catapult.launcher
 
 import android.content.Intent
 import android.content.IntentSender
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,10 +20,18 @@ import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import app.catapult.launcher.data.overrides.ItemOverride
+import app.catapult.launcher.data.overrides.ItemOverrideRepository
+import app.catapult.launcher.popup.CatapultShortcut
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherRootView
 import com.android.launcher3.R
+import com.android.launcher3.model.data.ItemInfoWithIcon
+import com.android.launcher3.popup.SystemShortcut
+import com.android.launcher3.util.ComponentKey
+import kotlinx.coroutines.runBlocking
+import java.util.stream.Stream
 
 class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         ActivityResultRegistryOwner {
@@ -76,8 +85,14 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                 }
                 ActivityCompat.requestPermissions(activity, permissions, requestCode)
             } else if (ActivityResultContracts.StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST == intent.action) {
-                val request: IntentSenderRequest =
-                    intent.getParcelableExtra(ActivityResultContracts.StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
+                val request = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(ActivityResultContracts.StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST, IntentSenderRequest::class.java)!!
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra(
+                        ActivityResultContracts.StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST
+                    )!!
+                }
                 try {
                     // startIntentSenderForResult path
                     ActivityCompat.startIntentSenderForResult(
@@ -122,6 +137,13 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         savedStateRegistryController.performSave(outState)
     }
 
+    fun getItemOverride(info: ItemInfoWithIcon): ItemOverride? {
+        return runBlocking {
+            ItemOverrideRepository.INSTANCE.get(this@CatapultLauncher)
+                .get(ComponentKey(info.targetComponent, info.user), info.container)
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
@@ -148,7 +170,22 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         launcher = null
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (activityResultRegistry.dispatchResult(requestCode, resultCode, data)) {
+            mPendingActivityRequestCode = -1
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
     override fun getActivityResultRegistry() = activityResultRegistry
+
+    override fun getSupportedShortcuts(): Stream<SystemShortcut.Factory<*>> {
+        return Stream.concat(
+            super.getSupportedShortcuts(),
+            Stream.of(CatapultShortcut.CUSTOMIZE)
+        )
+    }
 
     private fun restartIfPending() {
         when {

@@ -40,6 +40,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Property;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -76,6 +77,9 @@ import com.android.launcher3.views.IconLabelDotView;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
+
+import app.catapult.launcher.CatapultLauncherKt;
+import app.catapult.launcher.data.overrides.ItemOverride;
 
 /**
  * TextView that draws a bubble behind the text. We cannot use a LineBackgroundSpan
@@ -377,8 +381,15 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         mDotParams.appColor = iconDrawable.getIconColor();
         mDotParams.dotColor = getContext().getResources()
                 .getColor(android.R.color.system_accent3_200, getContext().getTheme());
-        setIcon(iconDrawable);
-        applyLabel(info);
+
+        ItemOverride itemOverride = CatapultLauncherKt.getLauncher().getItemOverride(info);
+        if (itemOverride != null) {
+            setIcon(itemOverride.newIcon(info));
+            setText(itemOverride.getLabel(info));
+        } else {
+            setIcon(iconDrawable);
+            applyLabel(info);
+        }
     }
 
     @UiThread

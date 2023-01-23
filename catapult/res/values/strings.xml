@@ -8,4 +8,14 @@
     <string name="homescreen_title">Homescreen</string>
     <string name="dock_search_bar_enabled_title">Dock search bar</string>
     <string name="two_row_dock_title">Two row dock</string>
+
+    <string name="icon_picker_default_category">Icons</string>
+    <string name="general_settings">General</string>
+    <string name="icon_style">Icon Style</string>
+    <string name="icon_pack">Icon Pack</string>
+    <string name="label">Label</string>
+    <string name="customize_button_text">Customize</string>
+    <string name="select_icon">Select Icon</string>
+    <string name="system_icons">System icons</string>
+
 </resources>

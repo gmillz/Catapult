@@ -5,6 +5,8 @@ plugins {
     kotlin("android").version("1.7.20")
     id("com.google.protobuf").version("0.8.19")
     id("com.android.library") version "7.3.1" apply false
+    id("com.google.devtools.ksp") version "1.7.20-1.0.8"
+    kotlin("plugin.parcelize").version("1.7.20")
 }
 
 android {
@@ -83,7 +85,7 @@ dependencies {
     implementation("androidx.slice:slice-core:1.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.cardview:cardview:1.0.0")
-    implementation("com.google.android.material:material:1.7.0")
+    implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation(project(":iconloaderlib"))
     implementation(project(":SystemUIPluginCore"))
@@ -107,7 +109,13 @@ dependencies {
     implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
     implementation("com.google.accompanist:accompanist-pager:0.28.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.20.0")
 
+    // Room Database
+    implementation("androidx.room:room-runtime:2.5.0")
+    implementation("androidx.room:room-ktx:2.5.0")
+    ksp("androidx.room:room-compiler:2.5.0")
+    implementation("com.google.code.gson:gson:2.10")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("org.mockito:mockito-core:4.11.0")
