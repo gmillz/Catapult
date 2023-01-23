@@ -20,6 +20,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.android.launcher3.Launcher
+import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherRootView
 import com.android.launcher3.R
 
@@ -149,8 +150,46 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     override fun getActivityResultRegistry() = activityResultRegistry
 
+    private fun restartIfPending() {
+        when {
+            restartFlags and FLAG_RESTART != 0 -> CatapultApp.app?.restart(false)
+            restartFlags and FLAG_RECREATE != 0 -> {
+                restartFlags = 0
+                recreate()
+            }
+        }
+    }
+
+    private fun scheduleFlag(flag: Int) {
+        restartFlags = restartFlags or flag
+        if (lifecycleRegistry.currentState === Lifecycle.State.RESUMED) {
+            restartIfPending()
+        }
+    }
+
+    fun scheduleRecreate() {
+        scheduleFlag(FLAG_RECREATE)
+    }
+
+    fun scheduleRestart() {
+        scheduleFlag(FLAG_RESTART)
+    }
+
+    fun recreateIfNotScheduled() {
+        if (restartFlags == 0) {
+            LauncherAppState.getInstanceNoCreate().model.forceReload()
+            LauncherAppState.getInstanceNoCreate().invariantDeviceProfile.onSettingsChanged(this)
+            recreate()
+        }
+    }
+
     companion object {
         var launcher: CatapultLauncher? = null
+
+        private const val FLAG_RECREATE = 1 shl 0
+        private const val FLAG_RESTART = 1 shl 1
+
+        var restartFlags = 0
     }
 
 }

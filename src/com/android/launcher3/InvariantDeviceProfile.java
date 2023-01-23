@@ -303,6 +303,11 @@ public class InvariantDeviceProfile {
         }
     }
 
+    public void onSettingsChanged(Context context) {
+        Context appContext = context.getApplicationContext();
+        MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
+    }
+
     public static String getCurrentGridName(Context context) {
         return Utilities.isGridOptionsEnabled(context)
                 ? Utilities.getPrefs(context).getString(KEY_IDP_GRID_NAME, null) : null;
