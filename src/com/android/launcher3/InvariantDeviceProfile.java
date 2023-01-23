@@ -71,6 +71,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.settings.Settings;
+
 public class InvariantDeviceProfile {
 
     public static final String TAG = "IDP";
@@ -1088,10 +1091,15 @@ public class InvariantDeviceProfile {
                     R.styleable.ProfileDisplayOption_hotseatBarBottomSpaceTwoPanelPortrait,
                     hotseatBarBottomSpace[INDEX_DEFAULT]);
 
+            Settings settings = Settings.getInstance(context);
+
+            int hotseatQsbSpaceRes = settings.getDockSearchBarEnabled().firstBlocking()
+                    ? R.dimen.hotseat_qsb_space_default : R.dimen.hotseat_qsb_space_no_qsb;
+
             hotseatQsbSpace[INDEX_DEFAULT] = a.getFloat(
                     R.styleable.ProfileDisplayOption_hotseatQsbSpace,
                     ResourcesCompat.getFloat(context.getResources(),
-                            R.dimen.hotseat_qsb_space_default));
+                            hotseatQsbSpaceRes));
             hotseatQsbSpace[INDEX_LANDSCAPE] = a.getFloat(
                     R.styleable.ProfileDisplayOption_hotseatQsbSpaceLandscape,
                     hotseatQsbSpace[INDEX_DEFAULT]);

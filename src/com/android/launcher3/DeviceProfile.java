@@ -55,6 +55,9 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Locale;
 
+import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.settings.Settings;
+
 @SuppressLint("NewApi")
 public class DeviceProfile {
 
@@ -380,7 +383,10 @@ public class DeviceProfile {
 
         workspaceCellPaddingXPx = res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_padding_x);
 
-        hotseatQsbHeight = res.getDimensionPixelSize(R.dimen.qsb_widget_height);
+        Settings settings = Settings.getInstance(context);
+
+        hotseatQsbHeight = settings.getDockSearchBarEnabled().firstBlocking()
+                ? res.getDimensionPixelSize(R.dimen.qsb_widget_height) : 0;
         hotseatQsbShadowHeight = res.getDimensionPixelSize(R.dimen.qsb_shadow_height);
         hotseatQsbVisualHeight = hotseatQsbHeight - 2 * hotseatQsbShadowHeight;
 

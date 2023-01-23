@@ -31,6 +31,8 @@ import androidx.annotation.Nullable;
 
 import java.util.function.Consumer;
 
+import app.catapult.launcher.CatapultAppKt;
+
 /**
  * View class that represents the bottom row of the home screen.
  */
@@ -59,7 +61,11 @@ public class Hotseat extends CellLayout implements Insettable {
     public Hotseat(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        mQsb = LayoutInflater.from(context).inflate(R.layout.search_container_hotseat, this, false);
+        mQsb = CatapultAppKt.getSettings().getDockSearchBarEnabled().firstBlocking()
+            ? LayoutInflater.from(context).inflate(
+                    R.layout.search_container_hotseat, this, false) :
+            LayoutInflater.from(context).inflate(
+                    R.layout.search_container_empty, this, false);
         addView(mQsb);
     }
 

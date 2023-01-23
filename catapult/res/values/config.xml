@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="hotseat_qsb_space_default">36.0</dimen>
+    <dimen name="hotseat_qsb_space_no_qsb">0.0</dimen>
+</resources>
