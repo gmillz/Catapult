@@ -1,0 +1,57 @@
+package app.catapult.launcher.settings.ui.screens
+
+import android.app.Activity
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.android.launcher3.R
+import com.gmillz.compose.settings.ui.SettingsScreen
+import com.gmillz.compose.settings.ui.components.SettingGroup
+import com.gmillz.compose.settings.ui.components.SettingTemplate
+import com.gmillz.compose.settings.ui.components.SettingsPage
+import com.gmillz.compose.settings.util.LocalNavController
+
+val topLevelScreens = listOf(
+    SettingsScreen("general", R.string.general_title) {
+        GeneralScreen()
+    },
+    SettingsScreen("homescreen", R.string.homescreen_title) {
+        HomescreenScreen()
+    },
+    SettingsScreen("dock", R.string.dock_title) {
+        DockScreen()
+    },
+    SettingsScreen("drawer", R.string.drawer_title) {
+        DrawerScreen()
+    },
+    SettingsScreen("folders", R.string.folder_title) {
+        FolderScreen()
+    }
+)
+
+@Composable
+fun TopLevelScreen() {
+    val navController = LocalNavController.current
+    val context = LocalContext.current
+    SettingsPage(
+        navController = navController,
+        title = { Text(text = stringResource(id = R.string.settings_button_text)) },
+        onBack = {
+            if (context is Activity) {
+                context.finishAndRemoveTask()
+            }
+        }
+    ) {
+        SettingGroup {
+            topLevelScreens.forEach { screen ->
+                SettingTemplate(
+                    title = screen.labelRes?.let { stringResource(id = it) }?: screen.route,
+                    onClick = {
+                        navController.navigate(screen.route)
+                    }
+                )
+            }
+        }
+    }
+}

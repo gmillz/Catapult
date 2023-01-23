@@ -88,6 +88,8 @@ dependencies {
     implementation(project(":SystemUIPluginCore"))
     implementation(project(":extensions"))
 
+    implementation("com.github.gmillz:ComposeSettings:1.1.2")
+
     implementation("com.google.protobuf:protobuf-javalite:3.21.12")
 
     // Compose
@@ -103,6 +105,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.28.0")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
     implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
 
 
     testImplementation("junit:junit:4.13.2")

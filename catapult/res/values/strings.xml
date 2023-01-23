@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="derived_app_name" translatable="false">Catapult</string>
+    <string name="folder_title">Folders</string>
+    <string name="dock_title">Dock</string>
+    <string name="drawer_title">Drawer</string>
+    <string name="general_title">General</string>
+    <string name="homescreen_title">Homescreen</string>
 </resources>
