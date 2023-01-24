@@ -16,6 +16,7 @@ import com.gmillz.compose.settings.getController
 import com.gmillz.compose.settings.ui.components.ListEntry
 import com.gmillz.compose.settings.ui.components.ListSetting
 import com.gmillz.compose.settings.ui.components.SettingGroup
+import com.gmillz.compose.settings.ui.components.SettingSwitch
 import com.gmillz.compose.settings.ui.components.SettingsPage
 import com.gmillz.compose.settings.util.LocalNavController
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -49,6 +50,15 @@ fun HomescreenScreen() {
                 controller = settings.feedProvider.getController(),
                 entries = entries,
                 label = stringResource(id = R.string.feed_provider_title)
+            )
+        }
+        
+        SettingGroup(
+            title = stringResource(id = R.string.widget_button_text)
+        ) {
+            SettingSwitch(
+                controller = settings.allowWidgetOverlap.getController(),
+                label = stringResource(id = R.string.allow_widget_overlap)
             )
         }
 

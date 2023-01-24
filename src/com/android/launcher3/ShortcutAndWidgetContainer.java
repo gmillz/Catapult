@@ -37,6 +37,9 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.widget.NavigableAppWidgetHostView;
 
+import app.catapult.launcher.CatapultApp;
+import app.catapult.launcher.CatapultAppKt;
+
 public class ShortcutAndWidgetContainer extends ViewGroup implements FolderIcon.FolderIconParent {
     static final String TAG = "ShortcutAndWidgetContainer";
 
@@ -65,6 +68,15 @@ public class ShortcutAndWidgetContainer extends ViewGroup implements FolderIcon.
         mActivity = ActivityContext.lookupContext(context);
         mWallpaperManager = WallpaperManager.getInstance(context);
         mContainerType = containerType;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        boolean allowWidgetOverlap = CatapultAppKt.getSettings().getAllowWidgetOverlap().firstBlocking();
+        setClipChildren(!allowWidgetOverlap);
+        setClipToPadding(!allowWidgetOverlap);
+        setClipToOutline(!allowWidgetOverlap);
     }
 
     public void setCellDimensions(int cellWidth, int cellHeight, int countX, int countY,

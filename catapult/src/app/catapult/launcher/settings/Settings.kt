@@ -104,6 +104,12 @@ class Settings(context: Context): BaseSettings(context) {
         save = { timeFormat -> timeFormat.toString() }
     )
 
+    val allowWidgetOverlap = setting(
+        key = booleanPreferencesKey("allow_widget_overlap"),
+        defaultValue = false,
+        onSet = { recreate() }
+    )
+
     companion object {
         @JvmField
         val INSTANCE = MainThreadInitializedObject(::Settings)

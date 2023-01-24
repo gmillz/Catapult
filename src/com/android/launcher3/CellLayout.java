@@ -82,6 +82,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Stack;
 
+import app.catapult.launcher.CatapultAppKt;
+
 public class CellLayout extends ViewGroup {
     private static final String TAG = "CellLayout";
     private static final boolean LOGD = false;
@@ -1904,6 +1906,10 @@ public class CellLayout extends ViewGroup {
         if (cellX < 0 || cellY < 0) return false;
 
         mIntersectingViews.clear();
+        if (CatapultAppKt.getSettings().getAllowWidgetOverlap().firstBlocking()) {
+            solution.intersectingViews = new ArrayList<>(mIntersectingViews);
+            return true;
+        }
         mOccupiedRect.set(cellX, cellY, cellX + spanX, cellY + spanY);
 
         // Mark the desired location of the view currently being dragged.
@@ -2755,7 +2761,7 @@ public class CellLayout extends ViewGroup {
 
     public boolean isOccupied(int x, int y) {
         if (x < mCountX && y < mCountY) {
-            return mOccupied.cells[x][y];
+            return mOccupied.cells[x][y] && !CatapultAppKt.getSettings().getAllowWidgetOverlap().firstBlocking();
         } else {
             throw new RuntimeException("Position exceeds the bound of this CellLayout");
         }
@@ -3021,6 +3027,7 @@ public class CellLayout extends ViewGroup {
     }
 
     public boolean isRegionVacant(int x, int y, int spanX, int spanY) {
-        return mOccupied.isRegionVacant(x, y, spanX, spanY);
+        return mOccupied.isRegionVacant(x, y, spanX, spanY)
+                || CatapultAppKt.getSettings().getAllowWidgetOverlap().firstBlocking();
     }
 }

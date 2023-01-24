@@ -488,7 +488,7 @@ public class LoaderCursor extends CursorWrapper {
                     + " into cell (" + containerIndex + "-" + item.screenId + ":"
                     + item.cellX + "," + item.cellX + "," + item.spanX + "," + item.spanY
                     + ") already occupied");
-            return false;
+            return CatapultAppKt.getSettings().getAllowWidgetOverlap().firstBlocking();
         }
     }
 }
