@@ -513,15 +513,16 @@ public class DeviceProfile {
         mViewScaleProvider = viewScaleProvider;
 
         // This is done last, after iconSizePx is calculated above.
-        mDotRendererWorkSpace = createDotRenderer(iconSizePx, dotRendererCache);
-        mDotRendererAllApps = createDotRenderer(allAppsIconSizePx, dotRendererCache);
+        boolean showNotifCount = CatapultAppKt.getSettings().getShowNotificationCount().firstBlocking();
+        mDotRendererWorkSpace = createDotRenderer(iconSizePx, dotRendererCache, showNotifCount);
+        mDotRendererAllApps = createDotRenderer(allAppsIconSizePx, dotRendererCache, showNotifCount);
     }
 
     private static DotRenderer createDotRenderer(
-            int size, @NonNull SparseArray<DotRenderer> cache) {
+            int size, @NonNull SparseArray<DotRenderer> cache, boolean showNotifCount) {
         DotRenderer renderer = cache.get(size);
-        if (renderer == null) {
-            renderer = new DotRenderer(size, getShapePath(DEFAULT_DOT_SIZE), DEFAULT_DOT_SIZE);
+        if (renderer == null || renderer.isDisplayCount() != showNotifCount) {
+            renderer = new DotRenderer(size, getShapePath(DEFAULT_DOT_SIZE), DEFAULT_DOT_SIZE, showNotifCount);
             cache.put(size, renderer);
         }
         return renderer;

@@ -19,4 +19,10 @@
     <string name="system_icons">System icons</string>
     <string name="feed_provider_title">Feed provider</string>
 
+    <!-- Notification Dots -->
+    <string name="show_notification_count">Show Notification Count</string>
+    <string name="missing_notification_access_label">Notification Access Needed</string>
+    <string name="missing_notification_access_description">Notification access needed.</string>
+    <string name="icon_category">Icons</string>
+
 </resources>

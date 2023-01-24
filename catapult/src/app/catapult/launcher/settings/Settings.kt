@@ -45,6 +45,11 @@ class Settings(context: Context): BaseSettings(context) {
         defaultValue = ""
     )
 
+    val showNotificationCount = setting(
+        key = booleanPreferencesKey("show_notification_count"),
+        defaultValue = false,
+        onSet = { reloadIdp() }
+    )
 
     companion object {
         @JvmField

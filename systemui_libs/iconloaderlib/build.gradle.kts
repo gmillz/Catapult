@@ -37,4 +37,5 @@ dependencies {
     implementation(project(":extensions"))
 
     implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.palette:palette-ktx:1.0.0")
 }

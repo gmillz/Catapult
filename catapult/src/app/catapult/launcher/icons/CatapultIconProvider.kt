@@ -96,8 +96,6 @@ import java.util.function.Supplier
         iconDpi: Int,
         fallback: Supplier<Drawable>): Drawable {
 
-        Log.d("TEST", "getIconWithOverrides - $packageName - $component")
-
         val componentName = ComponentName(packageName, component)
         val iconEntry = resolveIconEntry(componentName)
         var resolvedEntry = iconEntry

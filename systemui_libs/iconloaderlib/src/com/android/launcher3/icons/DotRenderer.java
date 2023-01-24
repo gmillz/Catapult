@@ -30,6 +30,9 @@ import android.graphics.RectF;
 import android.util.Log;
 import android.view.ViewDebug;
 
+import androidx.core.graphics.ColorUtils;
+import androidx.palette.graphics.Palette;
+
 /**
  * Used to draw a notification dot on top of an icon.
  */
@@ -39,9 +42,13 @@ public class DotRenderer {
 
     // The dot size is defined as a percentage of the app icon size.
     private static final float SIZE_PERCENTAGE = 0.228f;
+    private static final float SIZE_PERCENTAGE_WITH_COUNT = 0.348f;
+
+    private static final int MAX_COUNT = 99;
 
     private final float mCircleRadius;
     private final Paint mCirclePaint = new Paint(ANTI_ALIAS_FLAG | FILTER_BITMAP_FLAG);
+    private final Paint mTextPaint = new Paint(ANTI_ALIAS_FLAG | FILTER_BITMAP_FLAG);
 
     private final Bitmap mBackgroundWithShadow;
     private final float mBitmapOffset;
@@ -51,7 +58,13 @@ public class DotRenderer {
     private final float[] mLeftDotPosition;
 
     private static final int MIN_DOT_SIZE = 1;
-    public DotRenderer(int iconSizePx, Path iconShapePath, int pathSize) {
+
+    private final Rect mTextRect = new Rect();
+    private final boolean mDisplayCount;
+
+    public DotRenderer(int iconSizePx, Path iconShapePath, int pathSize, boolean displayCount) {
+        mDisplayCount = displayCount;
+
         int size = Math.round(SIZE_PERCENTAGE * iconSizePx);
         if (size <= 0) {
             size = MIN_DOT_SIZE;
@@ -66,6 +79,9 @@ public class DotRenderer {
         // Find the points on the path that are closest to the top left and right corners.
         mLeftDotPosition = getPathPoint(iconShapePath, pathSize, -1);
         mRightDotPosition = getPathPoint(iconShapePath, pathSize, 1);
+
+        mTextPaint.setTextSize(size * 0.65f);
+        mTextPaint.setTextAlign(Paint.Align.LEFT);
     }
 
     private static float[] getPathPoint(Path path, float size, float direction) {
@@ -100,7 +116,7 @@ public class DotRenderer {
     /**
      * Draw a circle on top of the canvas according to the given params.
      */
-    public void draw(Canvas canvas, DrawParams params) {
+    public void draw(Canvas canvas, DrawParams params, int numNotifications) {
         if (params == null) {
             Log.e(TAG, "Invalid null argument(s) passed in call to draw.");
             return;
@@ -127,7 +143,49 @@ public class DotRenderer {
         canvas.drawBitmap(mBackgroundWithShadow, mBitmapOffset, mBitmapOffset, mCirclePaint);
         mCirclePaint.setColor(params.dotColor);
         canvas.drawCircle(0, 0, mCircleRadius, mCirclePaint);
+
+        if (mDisplayCount && numNotifications > 0) {
+            mTextPaint.setColor(getCounterTextColor(params.dotColor));
+            String text = String.valueOf(Math.min(numNotifications, MAX_COUNT));
+            mTextPaint.getTextBounds(text, 0, text.length(), mTextRect);
+            float x = (-mTextRect.width() / 2f - mTextRect.right) * getAdjustment(numNotifications);
+            float y = mTextRect.height() / 2f - mTextRect.bottom;
+            canvas.drawText(text, x, y, mTextPaint);
+        }
+
         canvas.restore();
+    }
+
+    private int getCounterTextColor(int dotBackgroundColor) {
+        return new Palette.Swatch(
+                ColorUtils.setAlphaComponent(dotBackgroundColor, 0xFF), 1
+        ).getBodyTextColor();
+    }
+
+    public boolean isDisplayCount() {
+        return mDisplayCount;
+    }
+
+    /**
+     * An attempt to adjust digits to their perceived center, they were tuned with Roboto but should
+     * (hopefully) work with other OEM fonts as well.
+     */
+    private float getAdjustment(int number) {
+        switch (number) {
+            case 1:
+                return 1.01f;
+            case 2:
+                return 0.99f;
+            case 3:
+            case 4:
+            case 6:
+                return 0.98f;
+            case 7:
+                return 1.02f;
+            case 9:
+                return 0.9f;
+        }
+        return 1f;
     }
 
     public static class DrawParams {

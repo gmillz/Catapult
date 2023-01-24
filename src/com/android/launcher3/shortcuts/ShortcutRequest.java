@@ -28,6 +28,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.BuildConfig;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -101,7 +103,7 @@ public class ShortcutRequest {
             return new QueryResult(mContext.getSystemService(LauncherApps.class)
                     .getShortcuts(mQuery, mUserHandle));
         } catch (SecurityException | IllegalStateException e) {
-            Log.e(TAG, "Failed to query for shortcuts", e);
+            //Log.e(TAG, "Failed to query for shortcuts", e);
             return QueryResult.DEFAULT;
         }
     }
