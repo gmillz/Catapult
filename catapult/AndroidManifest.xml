@@ -19,6 +19,7 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.android.launcher3">
     <!--
     Manifest entries specific to Launcher3. This is merged with AndroidManifest-common.xml.
@@ -38,7 +39,8 @@
         android:theme="@style/AppTheme"
         android:largeHeap="@bool/config_largeHeap"
         android:restoreAnyVersion="true"
-        android:supportsRtl="true" >
+        android:supportsRtl="true"
+        tools:replace="android:label">
 
         <!--
         Main launcher activity. When extending only change the name, and keep all the
@@ -85,6 +87,22 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="app.catapult.launcher.BlankActivity"
+            android:theme="@style/Theme.Transparent" />
+
+        <activity android:name="app.catapult.launcher.smartspace.SmartspacePreferencesShortcut"
+            android:theme="@style/Theme.Transparent" />
+
+        <receiver android:name="app.catapult.launcher.smartspace.SmartspaceAppWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/smartspace_appwidget_info" />
+        </receiver>
     </application>
 </manifest>
 

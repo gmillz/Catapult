@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import app.catapult.launcher.launcher
+import app.catapult.launcher.smartspace.model.SmartspaceCalendar
+import app.catapult.launcher.smartspace.model.SmartspaceMode
+import app.catapult.launcher.smartspace.model.SmartspaceTimeFormat
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.gmillz.compose.settings.BaseSettings
@@ -49,6 +52,56 @@ class Settings(context: Context): BaseSettings(context) {
         key = booleanPreferencesKey("show_notification_count"),
         defaultValue = false,
         onSet = { reloadIdp() }
+    )
+
+    // Smartspace
+    val enableSmartspace = setting(
+        key = booleanPreferencesKey("enable_smartspace"),
+        defaultValue = true,
+        onSet = { recreate() }
+    )
+    val smartspaceMode = setting(
+        key = stringPreferencesKey("smartspace_mode"),
+        defaultValue = SmartspaceMode.fromString("lawnchair"),
+        parse = { SmartspaceMode.fromString(it) },
+        save = { it.toString() },
+        onSet = { recreate() }
+    )
+    val smartspaceCalendarSelectionEnabled = setting(
+        key = booleanPreferencesKey("smartspace_calendar_selection_enabled"),
+        defaultValue = false
+    )
+    val smartspaceBatteryStatus = setting(
+        key = booleanPreferencesKey("enable_smartspace_battery_status"),
+        defaultValue = false
+    )
+    val smartspaceNowPlaying = setting(
+        key = booleanPreferencesKey("enable_smartspace_now_playing"),
+        defaultValue = true
+    )
+    val smartspaceCalendar = setting(
+        key = stringPreferencesKey("smartspace_calendar"),
+        defaultValue = SmartspaceCalendar.fromString("gregorian"),
+        parse = { SmartspaceCalendar.fromString(it) },
+        save = { it.toString() }
+    )
+    val smartspaceAagWidget = setting(
+        key = booleanPreferencesKey("enable_smartspace_aag_widget"),
+        defaultValue = true
+    )
+    val smartspaceShowDate = setting(
+        key = booleanPreferencesKey("smartspace_show_date"),
+        defaultValue = true
+    )
+    val smartspaceShowTime = setting(
+        key = booleanPreferencesKey("smartspace_show_time"),
+        defaultValue = false
+    )
+    val smartspaceTimeFormat = setting(
+        key = stringPreferencesKey("smartspace_time_format"),
+        defaultValue = SmartspaceTimeFormat.fromString("system"),
+        parse = { stringValue -> SmartspaceTimeFormat.fromString(stringValue)  },
+        save = { timeFormat -> timeFormat.toString() }
     )
 
     companion object {

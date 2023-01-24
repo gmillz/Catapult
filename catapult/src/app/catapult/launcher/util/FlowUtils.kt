@@ -3,6 +3,12 @@ package app.catapult.launcher.util
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -12,6 +18,16 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 
 fun <T> Flow<T>.firstBlocking() = runBlocking { first() }
+
+fun broadcastReceiverFlow(context: Context, filter: IntentFilter) = callbackFlow {
+    val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            trySend(intent)
+        }
+    }
+    context.registerReceiver(receiver, filter)
+    awaitClose { context.unregisterReceiver(receiver) }
+}
 
 fun <T> Flow<T>.dropWhileBusy(): Flow<T> = channelFlow {
     collect { trySend(it) }

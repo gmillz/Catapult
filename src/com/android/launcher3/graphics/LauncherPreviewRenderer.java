@@ -19,6 +19,7 @@ import static android.app.WallpaperManager.FLAG_SYSTEM;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static com.android.launcher3.DeviceProfile.DEFAULT_SCALE;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT_PREDICTION;
@@ -55,6 +56,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.widget.RemoteViews;
 import android.widget.TextClock;
 
 import androidx.annotation.NonNull;
@@ -93,6 +95,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.IntSet;
+import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.MainThreadInitializedObject.SandboxContext;
 import com.android.launcher3.util.window.WindowManagerProxy;
 import com.android.launcher3.views.ActivityContext;
@@ -111,6 +114,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import app.catapult.launcher.CatapultAppWidgetHostView;
+import app.catapult.launcher.smartspace.provider.SmartspaceProvider;
 
 /**
  * Utility class for generating the preview of Launcher for a given InvariantDeviceProfile.
@@ -140,9 +146,15 @@ public class LauncherPreviewRenderer extends ContextWrapper
                     CustomWidgetManager.INSTANCE, PluginManagerWrapper.INSTANCE,
                     WindowManagerProxy.INSTANCE, DisplayController.INSTANCE);
             mIdp = idp;
+            putBaseInstance(SmartspaceProvider.INSTANCE);
             mObjectMap.put(InvariantDeviceProfile.INSTANCE, idp);
             mObjectMap.put(LauncherAppState.INSTANCE,
                     new LauncherAppState(this, null /* iconCacheFileName */));
+        }
+
+        private void putBaseInstance(MainThreadInitializedObject mainThreadInitializedObject) {
+            mAllowedObjects.add(mainThreadInitializedObject);
+            mObjectMap.put(mainThreadInitializedObject, mainThreadInitializedObject.get(getBaseContext()));
         }
 
         /**
@@ -545,7 +557,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
         // Add first page QSB
         if (FeatureFlags.QSB_ON_FIRST_SCREEN) {
             CellLayout firstScreen = mWorkspaceScreens.get(FIRST_SCREEN_ID);
-            View qsb = mHomeElementInflater.inflate(R.layout.qsb_preview, firstScreen,
+            View qsb = mHomeElementInflater.inflate(R.layout.smartspace_container, firstScreen,
                     false);
             CellLayout.LayoutParams lp =
                     new CellLayout.LayoutParams(0, 0, firstScreen.getCountX(), 1);
@@ -581,6 +593,9 @@ public class LauncherPreviewRenderer extends ContextWrapper
     }
 
     private static class LauncherPreviewAppWidgetHostView extends BaseLauncherAppWidgetHostView {
+
+        private View mCustomView;
+
         private LauncherPreviewAppWidgetHostView(Context context) {
             super(context);
         }
@@ -588,6 +603,39 @@ public class LauncherPreviewRenderer extends ContextWrapper
         @Override
         protected boolean shouldAllowDirectClick() {
             return false;
+        }
+
+        @Override
+        public void setAppWidget(int appWidgetId, AppWidgetProviderInfo info) {
+            inflateCustomView(info);
+            super.setAppWidget(appWidgetId, info);
+        }
+
+        private void inflateCustomView(AppWidgetProviderInfo info) {
+            mCustomView = CatapultAppWidgetHostView.inflateCustomView(getContext(), info, false);
+            if (mCustomView == null) {
+                return;
+            }
+            removeAllViews();
+            addView(mCustomView, MATCH_PARENT, MATCH_PARENT);
+        }
+
+        @Override
+        public void updateAppWidget(RemoteViews remoteViews) {
+            if (mCustomView != null) return;
+            super.updateAppWidget(remoteViews);
+        }
+
+        @Override
+        protected View getDefaultView() {
+            if (mCustomView != null) return new View(getContext());
+            return super.getDefaultView();
+        }
+
+        @Override
+        protected View getErrorView() {
+            if (mCustomView != null) return new View(getContext());
+            return super.getErrorView();
         }
     }
 

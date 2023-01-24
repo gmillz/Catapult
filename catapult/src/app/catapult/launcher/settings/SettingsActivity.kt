@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import app.catapult.extensions.identifier
 import app.catapult.launcher.settings.ui.screens.IconPickerScreen
 import app.catapult.launcher.settings.ui.screens.SelectIconScreen
+import app.catapult.launcher.settings.ui.screens.SmartspaceScreen
 import app.catapult.launcher.settings.ui.screens.TopLevelScreen
 import app.catapult.launcher.settings.ui.screens.topLevelScreens
 import app.catapult.launcher.settings.ui.theme.SettingsTheme
@@ -55,6 +56,9 @@ class SettingsActivity: ComponentActivity() {
                         ) {
                             val packageName = it.arguments!!.getString("packageName")!!
                             IconPickerScreen(packageName)
+                        },
+                        SettingsScreen(Routes.SMARTSPACE_WIDGET, R.string.smartspace_widget) {
+                            SmartspaceScreen(fromWidget = true)
                         }
                     )
                 )
@@ -69,5 +73,19 @@ class SettingsActivity: ComponentActivity() {
             return Intent(Intent.ACTION_VIEW, uri, context, SettingsActivity::class.java)
         }
 
+        fun getIntent(context: Context, route: String): Intent {
+            val uri ="android-app://androidx.navigation/$route".toUri()
+            return Intent(Intent.ACTION_VIEW, uri, context, SettingsActivity::class.java)
+        }
+
+        fun start(context: Context, route: String) {
+            context.startActivity(getIntent(context, route))
+        }
     }
+}
+
+object Routes {
+    const val SMARTSPACE = "smartspace"
+    const val SMARTSPACE_WIDGET = "smartspace_widget"
+    const val GENERAL = "general"
 }

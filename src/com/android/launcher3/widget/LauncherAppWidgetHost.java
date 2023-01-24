@@ -48,6 +48,8 @@ import com.android.launcher3.widget.custom.CustomWidgetManager;
 import java.util.ArrayList;
 import java.util.function.IntConsumer;
 
+import app.catapult.launcher.CatapultAppWidgetHostView;
+
 
 /**
  * Specific {@link AppWidgetHost} that creates our {@link LauncherAppWidgetHostView}
@@ -104,7 +106,7 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
             // already added the former to the workspace.
             view = mDeferredViews.get(appWidgetId);
         } else {
-            view = new LauncherAppWidgetHostView(context);
+            view = new CatapultAppWidgetHostView(context);
         }
         mViews.put(appWidgetId, view);
         return view;
@@ -237,7 +239,7 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
     public AppWidgetHostView createView(Context context, int appWidgetId,
             LauncherAppWidgetProviderInfo appWidget) {
         if (appWidget.isCustomWidget()) {
-            LauncherAppWidgetHostView lahv = new LauncherAppWidgetHostView(context);
+            LauncherAppWidgetHostView lahv = new CatapultAppWidgetHostView(context);
             lahv.setAppWidget(0, appWidget);
             CustomWidgetManager.INSTANCE.get(context).onViewCreated(lahv);
             return lahv;

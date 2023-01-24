@@ -53,6 +53,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import app.catapult.launcher.smartspace.SmartspaceAppWidgetProvider;
+
 /**
  * Widgets data model that is used by the adapters of the widget views and controllers.
  *
@@ -279,8 +281,10 @@ public class WidgetsModel {
         public boolean test(WidgetItem item) {
             if (item.widgetInfo != null) {
                 if ((item.widgetInfo.getWidgetFeatures() & WIDGET_FEATURE_HIDE_FROM_PICKER) != 0) {
-                    // Widget is hidden from picker
-                    return false;
+                    if (!item.componentName.equals(SmartspaceAppWidgetProvider.componentName)) {
+                        // Widget is hidden from picker
+                        return false;
+                    }
                 }
 
                 // Ensure that all widgets we show can be added on a workspace of this size

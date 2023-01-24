@@ -125,6 +125,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.smartspace.SmartspaceAppWidgetProvider;
+import app.catapult.launcher.smartspace.model.LawnchairSmartspace;
+import app.catapult.launcher.smartspace.model.SmartspaceMode;
+
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
  * Each page contains a number of icons, folders or widgets the user can
@@ -552,10 +557,15 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         CellLayout firstPage = insertNewWorkspaceScreen(Workspace.FIRST_SCREEN_ID, getChildCount());
         // Always add a QSB on the first screen.
         if (mQsb == null) {
+            SmartspaceMode smartspaceMode = CatapultAppKt.getSettings().getSmartspaceMode().firstBlocking();
+            if (!smartspaceMode.isAvailable(mLauncher)) {
+                smartspaceMode = LawnchairSmartspace.INSTANCE;
+                CatapultAppKt.getSettings().getSmartspaceMode().set(smartspaceMode);
+            }
             // In transposed layout, we add the QSB in the Grid. As workspace does not touch the
             // edges, we do not need a full width QSB.
             mQsb = LayoutInflater.from(getContext())
-                    .inflate(R.layout.search_container_workspace, firstPage, false);
+                    .inflate(smartspaceMode.getLayoutResourceId(), firstPage, false);
         }
 
         int cellHSpan = mLauncher.getDeviceProfile().inv.numSearchContainerColumns;
@@ -1054,6 +1064,28 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         } else {
             mIsEventOverQsb = false;
         }
+        if (!mIsEventOverQsb) {
+            mIsEventOverQsb = isEventOverQsb(mXDown, mYDown);
+        }
+    }
+
+    private boolean isEventOverQsb(float x, float y) {
+        CellLayout target = (CellLayout) getChildAt(mCurrentPage);
+        ShortcutAndWidgetContainer container = target.getShortcutsAndWidgets();
+        mTempFXY[0] = x;
+        mTempFXY[1] = y;
+        Utilities.mapCoordInSelfToDescendant(container, this, mTempFXY);
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View child = container.getChildAt(i);
+            Object tag = child.getTag();
+            if (!(tag instanceof LauncherAppWidgetInfo)) continue;
+            LauncherAppWidgetInfo info = (LauncherAppWidgetInfo) tag;
+            if (!info.providerName.equals(SmartspaceAppWidgetProvider.componentName)) continue;
+            boolean isOverQsb = child.getLeft() <= mTempFXY[0] && child.getRight() >= mTempFXY[0]
+                    && child.getTop() <= mTempFXY[1] && child.getBottom() >= mTempFXY[1];
+            if (isOverQsb) return true;
+        }
+        return false;
     }
 
     @Override

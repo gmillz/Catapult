@@ -17,3 +17,9 @@ fun PackageManager.getThemedIconPacksInstalled(context: Context): List<String> =
     } catch (_: PackageManager.NameNotFoundException) {
         emptyList()
     }
+
+fun PackageManager.isPackageInstalledAndEnabled(packageName: String) = try {
+    getApplicationInfo(packageName, 0).enabled
+} catch (_: PackageManager.NameNotFoundException) {
+    false
+}

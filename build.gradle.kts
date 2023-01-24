@@ -116,6 +116,9 @@ dependencies {
 
     implementation("com.google.protobuf:protobuf-javalite:3.21.12")
 
+    // Persian Date
+    implementation("com.github.samanzamani:PersianDate:1.5.4")
+
     // Compose
     implementation("androidx.compose.ui:ui:1.3.3")
     implementation("androidx.compose.ui:ui-tooling:1.3.3")
