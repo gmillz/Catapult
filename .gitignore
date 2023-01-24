@@ -13,3 +13,6 @@ bin/
 local.properties
 build/
 .DS_Store
+
+keystore.properties
+*.jks

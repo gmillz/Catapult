@@ -1,4 +1,6 @@
 import com.google.protobuf.gradle.*
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     id("com.android.application").version("7.4.0")
@@ -11,6 +13,7 @@ plugins {
 
 android {
     namespace = "com.android.launcher3"
+    testNamespace = "com.android.launcher3.tests"
     compileSdk = 33
 
     defaultConfig {
@@ -34,10 +37,26 @@ android {
         kotlinCompilerExtensionVersion = "1.3.2"
     }
 
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    var releaseSigning = signingConfigs.getByName("debug")
+    if (keystorePropertiesFile.exists()) {
+        val keystoreProperties = Properties()
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+        releaseSigning = signingConfigs.create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
             applicationIdSuffix = ".dev"
+        }
+        getByName("release") {
+            signingConfig = releaseSigning
         }
     }
 
