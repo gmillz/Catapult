@@ -12,5 +12,4 @@ bin/
 .gradle/
 local.properties
 build/
-gradlew*
 .DS_Store
