@@ -6,4 +6,5 @@ interface ILauncherOverlayCallback {
 
     oneway void overlayStatusChanged(int status);
 
+    oneway void overlayStatusChanged2(in Bundle p0);
 }

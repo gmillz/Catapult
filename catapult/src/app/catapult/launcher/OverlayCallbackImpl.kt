@@ -51,7 +51,8 @@ class OverlayCallbackImpl(private val mLauncher: CatapultLauncher) : LauncherOve
         mClient.hideOverlay(duration)
     }
 
-    override fun startSearch(config: ByteArray?, extras: Bundle?): Boolean = false
+    override fun startSearch(config: ByteArray?, extras: Bundle?) =
+        mClient.startSearch(config, extras)
 
     override fun onActivityCreated(activity: Activity, bundle: Bundle?) = Unit
 

@@ -50,6 +50,8 @@ import com.android.launcher3.util.DynamicResource;
 import com.android.launcher3.util.Themes;
 import com.android.systemui.plugins.ResourceProvider;
 
+import app.catapult.launcher.CatapultAppKt;
+
 import app.catapult.extensions.ViewKt;
 
 /**

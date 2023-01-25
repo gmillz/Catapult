@@ -57,7 +57,7 @@ public class LauncherClient {
     public boolean mDestroyed = false;
     private Bundle mLayoutBundle;
 
-    public class OverlayCallback extends ILauncherOverlayCallback.Stub implements Callback {
+    public static class OverlayCallback extends ILauncherOverlayCallback.Stub implements Callback {
         public LauncherClient mClient;
         private final Handler mUIHandler = new Handler(Looper.getMainLooper(), this);
         public Window mWindow;
@@ -80,6 +80,11 @@ public class LauncherClient {
         }
 
         @Override
+        public final void overlayStatusChanged2(Bundle bundle) {
+            Message.obtain(mUIHandler, 5, bundle).sendToTarget();
+        }
+
+        @Override
         public boolean handleMessage(Message message) {
             if (mClient == null) {
                 return true;
@@ -96,10 +101,10 @@ public class LauncherClient {
                     LayoutParams attributes = mWindow.getAttributes();
                     if ((Boolean) message.obj) {
                         attributes.x = mWindowShift;
-                        attributes.flags |= 512;
+                        attributes.flags |= LayoutParams.FLAG_LAYOUT_NO_LIMITS;
                     } else {
                         attributes.x = 0;
-                        attributes.flags &= -513;
+                        attributes.flags &= LayoutParams.FLAG_HARDWARE_ACCELERATED;
                     }
                     mWindowManager.updateViewLayout(mWindow.getDecorView(), attributes);
                     return true;
@@ -109,6 +114,13 @@ public class LauncherClient {
                         ((ISerializableScrollCallback) mClient.mScrollCallback).setPersistentFlags(message.arg1);
                     }
                     return true;
+                case 5:
+                    Bundle b = (Bundle) message.obj;
+                    int serviceStatus = b.getInt("service_status", 0);
+                    mClient.setServiceState(serviceStatus);
+                    if (mClient.mScrollCallback instanceof ISerializableScrollCallback) {
+                        ((ISerializableScrollCallback) mClient.mScrollCallback).setPersistentFlags(serviceStatus);
+                    }
                 default:
                     return false;
             }
@@ -187,9 +199,7 @@ public class LauncherClient {
     }
 
     public final void onStart() {
-        Log.i("FEED", "1");
         if (!mDestroyed) {
-            Log.i("FEED", "2");
             mLauncherService.setStopped(false);
             reconnect();
             mActivityState |= 1;
@@ -268,6 +278,7 @@ public class LauncherClient {
                 }
                 if (apiVersion >= 4) {
                     mOverlay.setActivityState(mActivityState);
+                    mOverlay.onResume();
                 } else if ((mActivityState & 2) != 0) {
                     mOverlay.onResume();
                 } else {
@@ -389,15 +400,10 @@ public class LauncherClient {
         String pkg = context.getPackageName();
         return new Intent("com.android.launcher3.WINDOW_OVERLAY")
                 .setPackage(bridgeInfo != null ? bridgeInfo.getPackageName() : "com.google.android.googlequicksearchbox")
-                .setData(Uri.parse(new StringBuilder(pkg.length() + 18)
-                            .append("app://")
-                            .append(pkg)
-                            .append(":")
-                            .append(Process.myUid())
-                            .toString())
+                .setData(Uri.parse("app://" + pkg + ":" + Process.myUid())
                         .buildUpon()
-                        .appendQueryParameter("v", Integer.toString(7))
-                        .appendQueryParameter("cv", Integer.toString(9))
+                        .appendQueryParameter("v", Integer.toString(11))
+                        .appendQueryParameter("cv", Integer.toString(20))
                         .build());
     }
 

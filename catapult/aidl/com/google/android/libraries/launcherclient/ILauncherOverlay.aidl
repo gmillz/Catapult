@@ -39,4 +39,6 @@ interface ILauncherOverlay {
 
     boolean startSearch(in byte[] data, in Bundle bundle);
 
+    oneway void updateClientOptions(in Bundle bundle);
+
 }

@@ -45,7 +45,8 @@ class Settings(context: Context): BaseSettings(context) {
 
     val feedProvider = setting(
         key = stringPreferencesKey("feed_provider"),
-        defaultValue = ""
+        defaultValue = "com.google.android.googlequicksearchbox",
+        onSet = { recreate() }
     )
 
     val showNotificationCount = setting(
