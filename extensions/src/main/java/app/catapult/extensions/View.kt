@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -33,6 +34,20 @@ fun View.repeatOnAttached(block: suspend CoroutineScope.() -> Unit) {
         launchedJob = null
     }
 }
+
+inline val View.viewAttachedScope: CoroutineScope
+    get() {
+        val scope = CoroutineScope(Dispatchers.Main.immediate)
+        addOnAttachStateChangeListener(object: View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+            }
+
+            override fun onViewDetachedFromWindow(v: View) {
+                scope.cancel()
+            }
+        })
+        return scope
+    }
 
 fun OnAttachStateChangeListener(callback: (isAttached: Boolean) -> Unit) = object : View.OnAttachStateChangeListener {
     override fun onViewAttachedToWindow(v: View) = callback(true)

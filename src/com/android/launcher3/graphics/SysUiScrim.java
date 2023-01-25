@@ -50,6 +50,9 @@ import com.android.launcher3.util.DynamicResource;
 import com.android.launcher3.util.Themes;
 import com.android.systemui.plugins.ResourceProvider;
 
+import app.catapult.extensions.ViewKt;
+import app.catapult.launcher.CatapultAppKt;
+
 /**
  * View scrim which draws behind hotseat and workspace
  */
@@ -142,6 +145,13 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
         mWallpaperScrimPaint.setColor(wallpaperScrimColor);
 
         view.addOnAttachStateChangeListener(this);
+
+        CatapultAppKt.getSettings().getShowTopShadow().onEach(ViewKt.getViewAttachedScope(mRoot),
+                (showTopShadow) -> {
+                    mHideSysUiScrim = !showTopShadow;
+                    mRoot.invalidate();
+                    return null;
+                });
     }
 
     /**

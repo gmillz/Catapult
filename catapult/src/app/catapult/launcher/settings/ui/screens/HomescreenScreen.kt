@@ -54,6 +54,15 @@ fun HomescreenScreen() {
         }
         
         SettingGroup(
+            title = stringResource(id = R.string.wallpaper_button_text)
+        ) {
+            SettingSwitch(
+                controller = settings.showTopShadow.getController(),
+                label = stringResource(id = R.string.show_top_shadow_title)
+            )
+        }
+        
+        SettingGroup(
             title = stringResource(id = R.string.widget_button_text)
         ) {
             SettingSwitch(

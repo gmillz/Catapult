@@ -67,5 +67,6 @@
     <string name="smartspace_calendar">Calendar</string>
     <string name="event_provider_missing_notification_dots">To use <xliff:g example="My Provider" id="providerName">%1$s</xliff:g>, enable Notification Dots.</string>
     <string name="allow_widget_overlap">Allow overlap</string>
+    <string name="show_top_shadow_title">Top shadow</string>
 
 </resources>

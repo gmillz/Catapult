@@ -110,6 +110,11 @@ class Settings(context: Context): BaseSettings(context) {
         onSet = { recreate() }
     )
 
+    val showTopShadow = setting(
+        key = booleanPreferencesKey("show_top_shadow"),
+        defaultValue = false
+    )
+
     companion object {
         @JvmField
         val INSTANCE = MainThreadInitializedObject(::Settings)
