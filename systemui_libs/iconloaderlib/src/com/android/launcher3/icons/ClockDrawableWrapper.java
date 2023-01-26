@@ -62,26 +62,26 @@ public class ClockDrawableWrapper extends AdaptiveIconDrawable implements Bitmap
 
     private static final String TAG = "ClockDrawableWrapper";
 
-    private static final boolean DISABLE_SECONDS = true;
+    private static final boolean DISABLE_SECONDS = false;
     private static final int NO_COLOR = -1;
 
     // Time after which the clock icon should check for an update. The actual invalidate
     // will only happen in case of any change.
     public static final long TICK_MS = DISABLE_SECONDS ? TimeUnit.MINUTES.toMillis(1) : 200L;
 
-    private static final String LAUNCHER_PACKAGE = "com.android.launcher3";
-    private static final String ROUND_ICON_METADATA_KEY = LAUNCHER_PACKAGE
+    public static final String LAUNCHER_PACKAGE = "com.android.launcher3";
+    public static final String ROUND_ICON_METADATA_KEY = LAUNCHER_PACKAGE
             + ".LEVEL_PER_TICK_ICON_ROUND";
-    private static final String HOUR_INDEX_METADATA_KEY = LAUNCHER_PACKAGE + ".HOUR_LAYER_INDEX";
-    private static final String MINUTE_INDEX_METADATA_KEY = LAUNCHER_PACKAGE
+    public static final String HOUR_INDEX_METADATA_KEY = LAUNCHER_PACKAGE + ".HOUR_LAYER_INDEX";
+    public static final String MINUTE_INDEX_METADATA_KEY = LAUNCHER_PACKAGE
             + ".MINUTE_LAYER_INDEX";
-    private static final String SECOND_INDEX_METADATA_KEY = LAUNCHER_PACKAGE
+    public static final String SECOND_INDEX_METADATA_KEY = LAUNCHER_PACKAGE
             + ".SECOND_LAYER_INDEX";
-    private static final String DEFAULT_HOUR_METADATA_KEY = LAUNCHER_PACKAGE
+    public static final String DEFAULT_HOUR_METADATA_KEY = LAUNCHER_PACKAGE
             + ".DEFAULT_HOUR";
-    private static final String DEFAULT_MINUTE_METADATA_KEY = LAUNCHER_PACKAGE
+    public static final String DEFAULT_MINUTE_METADATA_KEY = LAUNCHER_PACKAGE
             + ".DEFAULT_MINUTE";
-    private static final String DEFAULT_SECOND_METADATA_KEY = LAUNCHER_PACKAGE
+    public static final String DEFAULT_SECOND_METADATA_KEY = LAUNCHER_PACKAGE
             + ".DEFAULT_SECOND";
 
     /* Number of levels to jump per second for the second hand */

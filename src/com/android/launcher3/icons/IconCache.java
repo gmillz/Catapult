@@ -76,6 +76,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import app.catapult.launcher.icons.CatapultIconProvider;
+
 /**
  * Cache of application icons.  Icons can be made from any thread.
  */
@@ -100,7 +102,7 @@ public class IconCache extends BaseIconCache {
     private int mPendingIconRequestCount = 0;
 
     public IconCache(Context context, InvariantDeviceProfile idp) {
-        this(context, idp, LauncherFiles.APP_ICONS_DB, new IconProvider(context));
+        this(context, idp, LauncherFiles.APP_ICONS_DB, new CatapultIconProvider(context));
     }
 
     public IconCache(Context context, InvariantDeviceProfile idp, String dbFileName,

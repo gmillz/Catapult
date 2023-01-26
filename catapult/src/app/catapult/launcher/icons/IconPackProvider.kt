@@ -4,21 +4,15 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Resources
-import android.content.res.Resources.ID_NULL
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.InsetDrawable
-import android.os.Build
 import android.os.Process
 import android.os.UserHandle
-import android.util.Log
-import androidx.annotation.RequiresApi
 import app.catapult.extensions.getThemedIconPacksInstalled
 import app.catapult.extensions.isThemedIconsEnabled
 import com.android.launcher3.icons.ClockDrawableWrapper
-import com.android.launcher3.icons.IconProvider
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.MainThreadInitializedObject
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +32,7 @@ class IconPackProvider(private val context: Context) {
     }
 
     fun getIconPack(packageName: String): IconPack? {
-        if (packageName.isEmpty()) {
+        if (packageName.isEmpty() || packageName == "system") {
             return null
         }
         if (packageName == "system") {
@@ -62,10 +56,10 @@ class IconPackProvider(private val context: Context) {
         }
     }
 
-    //fun getClockMetadata(iconEntry: IconEntry): ClockMetadata? {
-    //    val iconPack = getIconPackOrSystem(iconEntry.packPackageName)?: return null
-    //    return iconPack.getClock(iconEntry)
-    //}
+    fun getClockMetadata(iconEntry: IconEntry): ClockMetadata? {
+        val iconPack = getIconPackOrSystem(iconEntry.packPackageName)?: return null
+        return iconPack.getClock(iconEntry)
+    }
 
     fun getDrawable(iconEntry: IconEntry, iconDpi: Int): Drawable? {
         return getDrawable(iconEntry, iconDpi, Process.myUserHandle())
@@ -77,35 +71,46 @@ class IconPackProvider(private val context: Context) {
         val packageManager =  context.packageManager
         val drawable = iconPack.getIcon(iconEntry, iconDpi) ?: return null
         val themedIconPacks = packageManager.getThemedIconPacksInstalled(context)
-        if (
-            context.isThemedIconsEnabled() && iconEntry.packPackageName in themedIconPacks
-        ) {
-            val themedColors: IntArray = ThemedIconDrawable.getColors(context)
-            val res = packageManager.getResourcesForApplication(iconEntry.packPackageName)
-            @SuppressLint("DiscouragedApi")
-            val resId = res.getIdentifier(iconEntry.name, "drawable", iconEntry.packPackageName)
-            val bg: Drawable = ColorDrawable(themedColors[0])
-            //val td = ThemeData(res, iconEntry.packPackageName, resId)
-            val fg = drawable
-            return if (fg is AdaptiveIconDrawable) {
-                val foregroundDr = fg.foreground.apply { setTint(themedColors[1]) }
-                AdaptiveIconDrawable(bg, foregroundDr)
-            } else {
-                val iconFromPack = InsetDrawable(drawable, .3f).apply { setTint(themedColors[1]) }
-                //td.wrapDrawable(AdaptiveIconDrawable(bg, iconFromPack), 0)
-                AdaptiveIconDrawable(bg, fg)
-            }
-        }
+        val isThemedIconsEnabled = context.isThemedIconsEnabled()
+            && (iconEntry.packPackageName in themedIconPacks)
         val clockMetadata = if (user == Process.myUserHandle()) iconPack.getClock(iconEntry) else null
         if (clockMetadata != null) {
             val clockDrawable = ClockDrawableWrapper.forMeta(clockMetadata) {
-                drawable
+                if (isThemedIconsEnabled) wrapThemedDate(
+                    packageManager,
+                    iconEntry,
+                    drawable
+                ) else drawable
             }
             if (clockDrawable != null) {
                 return clockDrawable
             }
         }
+        if (isThemedIconsEnabled) {
+            return wrapThemedDate(packageManager, iconEntry, drawable)
+        }
         return drawable
+    }
+
+    private fun wrapThemedDate(
+        packageManager: PackageManager,
+        iconEntry: IconEntry,
+        drawable: Drawable
+    ): Drawable? {
+        val themedColors: IntArray = ThemedIconDrawable.getColors(context)
+        val res = packageManager.getResourcesForApplication(iconEntry.packPackageName)
+        @SuppressLint("DiscouragedApi")
+        val resId = res.getIdentifier(iconEntry.name, "drawable", iconEntry.packPackageName)
+        val bg: Drawable = ColorDrawable(themedColors[0])
+        //val td = ThemeData(res, iconEntry.packPackageName, resId)
+        return if (drawable is AdaptiveIconDrawable) {
+            val foregroundDr = drawable.foreground.apply { setTint(themedColors[1]) }
+            AdaptiveIconDrawable(bg, foregroundDr)
+        } else {
+            val iconFromPack = InsetDrawable(drawable, .3f).apply { setTint(themedColors[1]) }
+            //td.wrapDrawable(AdaptiveIconDrawable(bg, iconFromPack), 0)
+            AdaptiveIconDrawable(bg, drawable)
+        }
     }
 
     fun getIconPacks(): Flow<List<IconPack>> = flow {

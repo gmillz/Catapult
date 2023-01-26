@@ -3,16 +3,21 @@ package app.catapult.launcher.icons
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherActivityInfo
+import android.content.pm.PackageManager
+import android.content.res.Resources
+import android.content.res.Resources.ID_NULL
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import androidx.core.os.BuildCompat
 import app.catapult.launcher.data.overrides.ItemOverrideRepository
 import app.catapult.launcher.settings
 import app.catapult.launcher.util.MultiSafeCloseable
 import app.catapult.launcher.util.dropWhileBusy
 import app.catapult.launcher.util.subscribeBlocking
+import com.android.launcher3.icons.ClockDrawableWrapper
 import com.android.launcher3.icons.LauncherIconProvider
 import com.android.launcher3.util.SafeCloseable
 import kotlinx.coroutines.CoroutineScope
@@ -28,10 +33,6 @@ import java.util.function.Supplier
     private val iconPackProvider = IconPackProvider.INSTANCE.get(context)
     private val iconPack get() = iconPackProvider.getIconPack(settings.iconPack.firstBlocking())?.apply { loadBlocking() }
     private val itemOverrideRepo = ItemOverrideRepository.INSTANCE.get(context)
-
-    init {
-        Log.d("TEST", "iconPack - ${iconPack?.packPackageName}")
-    }
 
     override fun registerIconChangeListener(
         listener: IconChangeListener,
@@ -100,19 +101,81 @@ import java.util.function.Supplier
         val iconEntry = resolveIconEntry(componentName)
         var resolvedEntry = iconEntry
         if (iconEntry != null) {
-            when {
-                mCalendar != null && mCalendar.packageName == packageName -> {
-                    resolvedEntry = iconEntry.resolveDynamicCalendar(getDay())
-                }
+            if (iconEntry.type == IconType.Calendar) {
+                resolvedEntry = iconEntry.resolveDynamicCalendar(getDay())
             }
 
             val icon = resolvedEntry?.let { iconPackProvider.getDrawable(it, iconDpi) }
             if (icon != null) {
                 return icon
             }
+        } else {
+            if (isDynamicClockPackage(componentName)) {
+                return ClockDrawableWrapper.forPackage(context, packageName, iconDpi, getThemeDataForPackage(packageName))
+            }
+            if (isDynamicCalendarPackage(componentName)) {
+                val d = loadCalendarDrawable(componentName, iconDpi)
+                if (d != null) return d
+            }
         }
 
         return super.getIconWithOverrides(packageName, component, iconDpi, fallback)
+    }
+
+    private fun loadCalendarDrawable(componentName: ComponentName, iconDpi: Int): Drawable? {
+        val pm = context.packageManager
+        try {
+            val metadata = pm.getActivityInfo(componentName,
+            PackageManager.GET_UNINSTALLED_PACKAGES or PackageManager.GET_META_DATA)
+                .metaData
+
+            val resources = pm.getResourcesForApplication(componentName.packageName)
+            val id = getDynamicIconId(componentName.packageName, metadata, resources)
+            if (id != ID_NULL) {
+                val drawable = resources.getDrawableForDensity(id, iconDpi, null)
+                return drawable
+            }
+        } catch (_: PackageManager.NameNotFoundException) {
+            return null
+        }
+        return null
+    }
+
+    private fun getDynamicIconId(packageName: String, metadata: Bundle?, resources: Resources): Int {
+        if (metadata == null) {
+            return ID_NULL
+        }
+        val key = "$packageName.dynamic_icons"
+        val arrayId = metadata.getInt(key, ID_NULL)
+        if (arrayId == ID_NULL) {
+            return ID_NULL
+        }
+        return try {
+            resources.obtainTypedArray(arrayId).getResourceId(getDay(), ID_NULL)
+        } catch (e: Resources.NotFoundException) {
+            ID_NULL
+        }
+    }
+
+    private fun isDynamicCalendarPackage(componentName: ComponentName): Boolean {
+        val activityInfo = context.packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA)
+        val meta = activityInfo.metaData ?: return false
+        return meta.containsKey("${componentName.packageName}.dynamic_icons")
+    }
+
+    private fun isDynamicClockPackage(componentName: ComponentName): Boolean {
+        val appInfo: ApplicationInfo = context.packageManager.getApplicationInfo(
+            componentName.packageName,
+            PackageManager.MATCH_UNINSTALLED_PACKAGES or PackageManager.GET_META_DATA
+        )
+        val meta = appInfo.metaData ?: return false
+        return meta.containsKey(ClockDrawableWrapper.DEFAULT_HOUR_METADATA_KEY) &&
+            meta.containsKey(ClockDrawableWrapper.DEFAULT_MINUTE_METADATA_KEY) &&
+            meta.containsKey(ClockDrawableWrapper.DEFAULT_SECOND_METADATA_KEY) &&
+            meta.containsKey(ClockDrawableWrapper.HOUR_INDEX_METADATA_KEY) &&
+            meta.containsKey(ClockDrawableWrapper.MINUTE_INDEX_METADATA_KEY) &&
+            meta.containsKey(ClockDrawableWrapper.SECOND_INDEX_METADATA_KEY) &&
+            meta.containsKey(ClockDrawableWrapper.ROUND_ICON_METADATA_KEY)
     }
 
     private fun resolveIconEntry(componentName: ComponentName): IconEntry? {
@@ -147,5 +210,9 @@ import java.util.function.Supplier
             icon = info.loadIcon(context.packageManager)
         }
         return icon!!
+    }
+
+    override fun getSystemIconState(): String {
+        return super.getSystemIconState() + ",pack:${iconPack}"
     }
 }
