@@ -115,6 +115,7 @@ dependencies {
     implementation("com.github.gmillz:ComposeSettings:1.1.2")
 
     implementation("com.google.protobuf:protobuf-javalite:3.21.12")
+    implementation("me.xdrop:fuzzywuzzy:1.4.0")
 
     // Persian Date
     implementation("com.github.samanzamani:PersianDate:1.5.4")

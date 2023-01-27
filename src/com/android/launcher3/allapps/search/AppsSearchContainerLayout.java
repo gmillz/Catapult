@@ -45,6 +45,8 @@ import com.android.launcher3.views.ActivityContext;
 
 import java.util.ArrayList;
 
+import app.catapult.launcher.allapps.search.CatapultAppSearchAlgorithm;
+
 /**
  * Layout to contain the All-apps search UI.
  */
@@ -130,7 +132,7 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     public void initializeSearch(ActivityAllAppsContainerView<?> appsView) {
         mAppsView = appsView;
         mSearchBarController.initialize(
-                new DefaultAppSearchAlgorithm(getContext(), true),
+                new CatapultAppSearchAlgorithm(getContext(), true),
                 this, mLauncher, this);
     }
 
