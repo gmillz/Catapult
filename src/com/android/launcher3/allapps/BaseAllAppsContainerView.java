@@ -73,6 +73,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import app.catapult.launcher.CatapultAppKt;
+
 /**
  * Base all apps view container.
  *
@@ -129,6 +131,7 @@ public abstract class BaseAllAppsContainerView<T extends Context & ActivityConte
     protected RecyclerViewFastScroller mTouchHandler;
     protected final Point mFastScrollerOffset = new Point();
 
+    private final boolean mScrimIsTranslucent;
     private final int mScrimColor;
     private final int mHeaderProtectionColor;
     protected final float mHeaderThreshold;
@@ -141,6 +144,9 @@ public abstract class BaseAllAppsContainerView<T extends Context & ActivityConte
         mActivityContext = ActivityContext.lookupContext(context);
         mMainAdapterProvider = createMainAdapterProvider();
 
+        float drawerOpacity = CatapultAppKt.getSettings().getDrawerOpacity().firstBlocking();
+
+        mScrimIsTranslucent = drawerOpacity < 1f;
         mScrimColor = Themes.getAttrColor(context, R.attr.allAppsScrimColor);
         mHeaderThreshold = getResources().getDimensionPixelSize(
                 R.dimen.dynamic_grid_cell_border_spacing);
@@ -767,7 +773,13 @@ public abstract class BaseAllAppsContainerView<T extends Context & ActivityConte
 
     protected void updateHeaderScroll(int scrolledOffset) {
         float prog = Utilities.boundToRange((float) scrolledOffset / mHeaderThreshold, 0f, 1f);
-        int headerColor = getHeaderColor(prog);
+        int headerColor;
+        if (mScrimIsTranslucent) {
+            headerColor = ColorUtils.setAlphaComponent(mHeaderProtectionColor,
+                    (int) (getSearchRecyclerView().getAlpha() * prog * 255));
+        } else {
+            headerColor = getHeaderColor(prog);
+        }
         int tabsAlpha = mHeader.getPeripheralProtectionHeight() == 0 ? 0
                 : (int) (Utilities.boundToRange(
                         (scrolledOffset + mHeader.mSnappedScrolledY) / mHeaderThreshold, 0f, 1f)

@@ -102,6 +102,7 @@
     <string name="sliders">Sliders</string>
     <string name="apply">Apply</string>
     <string name="create">Create</string>
+    <string name="background_opacity">Background opacity</string>
 
 
 </resources>

@@ -19,12 +19,17 @@ import static com.android.launcher3.anim.Interpolators.DEACCEL_2;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_ALLAPPS;
 
 import android.content.Context;
+import android.util.Log;
+
+import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.DeviceProfile.DeviceProfileListenable;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
 import com.android.launcher3.util.Themes;
+
+import app.catapult.launcher.CatapultAppKt;
 
 /**
  * Definition for AllApps state
@@ -97,8 +102,10 @@ public class AllAppsState extends LauncherState {
 
     @Override
     public int getWorkspaceScrimColor(Launcher launcher) {
-        return launcher.getDeviceProfile().isTablet
-                ? launcher.getResources().getColor(R.color.widgets_picker_scrim)
-                : Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
+        float opacity = CatapultAppKt.getSettings().getDrawerOpacity().firstBlocking();
+        int alpha = (int) (opacity * 255);
+        return ColorUtils.setAlphaComponent(launcher.getDeviceProfile().isTablet
+                ? launcher.getColor(R.color.widgets_picker_scrim)
+                : Themes.getAttrColor(launcher, R.attr.allAppsScrimColor), alpha);
     }
 }

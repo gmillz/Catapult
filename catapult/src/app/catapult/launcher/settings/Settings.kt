@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.onEach
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import app.catapult.launcher.icons.AdaptiveIconDrawableCompat
 import app.catapult.launcher.icons.shape.IconShape
@@ -146,6 +147,12 @@ class Settings(context: Context): BaseSettings(context) {
     val showTopShadow = setting(
         key = booleanPreferencesKey("show_top_shadow"),
         defaultValue = false
+    )
+
+    val drawerOpacity = setting(
+        key = floatPreferencesKey("drawer_background_opacity"),
+        defaultValue = 1f,
+        onSet = { recreate() }
     )
 
     init {
