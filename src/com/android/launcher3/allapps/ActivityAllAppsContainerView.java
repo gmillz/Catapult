@@ -45,7 +45,7 @@ import java.util.ArrayList;
 public class ActivityAllAppsContainerView<T extends Context & AppLauncher
         & DeviceProfileListenable> extends BaseAllAppsContainerView<T> {
 
-    private static final long DEFAULT_SEARCH_TRANSITION_DURATION_MS = 300;
+    private static final long DEFAULT_SEARCH_TRANSITION_DURATION_MS = 0;
 
     // Used to animate Search results out and A-Z apps in, or vice-versa.
     private final SearchTransitionController mSearchTransitionController;
@@ -246,6 +246,7 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
     @Override
     protected void updateHeaderScroll(int scrolledOffset) {
         super.updateHeaderScroll(scrolledOffset);
+        getSearchView().setBackgroundResource(R.drawable.bg_all_apps_searchbox);
         if (mSearchUiManager.getEditText() == null) {
             return;
         }
