@@ -18,6 +18,7 @@ package com.android.launcher3.model.data;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.AdaptiveIconDrawable;
 
 import androidx.annotation.Nullable;
 
@@ -83,7 +84,7 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
     public static final int FLAG_SYSTEM_MASK = FLAG_SYSTEM_YES | FLAG_SYSTEM_NO;
 
     /**
-     * Flag indicating that the icon is an {@link android.graphics.drawable.AdaptiveIconDrawable}
+     * Flag indicating that the icon is an {@link AdaptiveIconDrawable}
      * that can be optimized in various way.
      */
     public static final int FLAG_ADAPTIVE_ICON = 1 << 8;

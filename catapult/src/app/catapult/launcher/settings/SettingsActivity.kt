@@ -88,4 +88,6 @@ object Routes {
     const val SMARTSPACE = "smartspace"
     const val SMARTSPACE_WIDGET = "smartspace_widget"
     const val GENERAL = "general"
+    const val CUSTOM_ICON_SHAPE_CREATOR = "custom_icon_shape_creator"
+    const val ICON_SHAPE = "icon_shape"
 }

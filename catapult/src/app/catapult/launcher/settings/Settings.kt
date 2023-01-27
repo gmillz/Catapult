@@ -1,13 +1,22 @@
 package app.catapult.launcher.settings
 
 import android.content.Context
+import com.android.launcher3.LauncherAppState
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.onEach
+
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat
+import app.catapult.launcher.icons.shape.IconShape
+import app.catapult.launcher.icons.shape.IconShapeManager
 import app.catapult.launcher.launcher
 import app.catapult.launcher.smartspace.model.SmartspaceCalendar
 import app.catapult.launcher.smartspace.model.SmartspaceMode
 import app.catapult.launcher.smartspace.model.SmartspaceTimeFormat
 import com.android.launcher3.InvariantDeviceProfile
+import com.android.launcher3.graphics.IconShape as L3IconShape
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.gmillz.compose.settings.BaseSettings
 
@@ -35,6 +44,29 @@ class Settings(context: Context): BaseSettings(context) {
         key = stringPreferencesKey("icon_pack"),
         defaultValue = "",
         onSet = { reloadIdp() }
+    )
+
+    val iconShape = setting(
+        key = stringPreferencesKey("icon_shape"),
+        defaultValue = IconShape.fromString(
+            value = "system",
+            context = context
+        )?: IconShape.Circle,
+        parse = { IconShape.fromString(it, context)?: IconShapeManager.getSystemIconShape(context) },
+        save = { it.toString() },
+        onSet = {
+            initializeIconShape(it)
+            L3IconShape.init(context)
+            LauncherAppState.getInstance(context).reloadIcons()
+        }
+    )
+
+    val customIconShape = setting(
+        key = stringPreferencesKey("custom_icon_shape"),
+        defaultValue = IconShape.fromString("system", context)?: IconShape.Circle,
+        parse = { IconShape.fromString(value = it, context = context) },
+        save = { it.toString() },
+        onSet = { it?.let(iconShape::setBlocking) }
     )
 
     val enableFeed = setting(
@@ -115,6 +147,23 @@ class Settings(context: Context): BaseSettings(context) {
         key = booleanPreferencesKey("show_top_shadow"),
         defaultValue = false
     )
+
+    init {
+        initializeIconShape(iconShape.firstBlocking())
+        iconShape.get()
+            .drop(1)
+            .distinctUntilChanged()
+            .onEach { shape ->
+                initializeIconShape(shape)
+                L3IconShape.init(context)
+                LauncherAppState.getInstance(context).reloadIcons()
+            }
+    }
+
+    private fun initializeIconShape(shape: IconShape) {
+        AdaptiveIconDrawableCompat.sInitialized = true
+        AdaptiveIconDrawableCompat.sMask = shape.getMaskPath()
+    }
 
     companion object {
         @JvmField

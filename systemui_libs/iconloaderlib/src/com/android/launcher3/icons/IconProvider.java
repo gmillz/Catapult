@@ -55,13 +55,15 @@ import com.android.launcher3.util.SafeCloseable;
 import java.util.Calendar;
 import java.util.function.Supplier;
 
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+
 /**
  * Class to handle icon loading from different packages
  */
 public class IconProvider {
 
     private final String ACTION_OVERLAY_CHANGED = "android.intent.action.OVERLAY_CHANGED";
-    private static final int CONFIG_ICON_MASK_RES_ID = Resources.getSystem().getIdentifier(
+    public static final int CONFIG_ICON_MASK_RES_ID = Resources.getSystem().getIdentifier(
             "config_icon_mask", "string", "android");
 
     private static final String TAG = "IconProvider";
@@ -135,7 +137,7 @@ public class IconProvider {
             if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && td != null) {
                 AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon;
                 if  (aid.getMonochrome() == null) {
-                    icon = new AdaptiveIconDrawable(aid.getBackground(),
+                    icon = new AdaptiveIconDrawableCompat(aid.getBackground(),
                             aid.getForeground(), td.loadPaddedDrawable());
                 }
             }

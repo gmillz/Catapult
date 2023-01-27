@@ -111,7 +111,9 @@ import java.util.function.Supplier
             }
         } else {
             if (isDynamicClockPackage(componentName)) {
-                return ClockDrawableWrapper.forPackage(context, packageName, iconDpi, getThemeDataForPackage(packageName))
+                val clockDrawable = ClockDrawableWrapper.forPackage(
+                    context, packageName, iconDpi, getThemeDataForPackage(packageName))
+                if (clockDrawable != null) return clockDrawable
             }
             if (isDynamicCalendarPackage(componentName)) {
                 val d = loadCalendarDrawable(componentName, iconDpi)
@@ -119,7 +121,7 @@ import java.util.function.Supplier
             }
         }
 
-        return super.getIconWithOverrides(packageName, component, iconDpi, fallback)
+        return AdaptiveIconDrawableCompat.wrapNonNull(super.getIconWithOverrides(packageName, component, iconDpi, fallback))
     }
 
     private fun loadCalendarDrawable(componentName: ComponentName, iconDpi: Int): Drawable? {

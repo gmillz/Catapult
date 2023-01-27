@@ -29,7 +29,10 @@ import android.graphics.Picture;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.AdaptiveIconDrawable;
+
+import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
@@ -45,10 +48,10 @@ import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.views.ActivityContext;
 
 /**
- * {@link AdaptiveIconDrawable} representation of a {@link FolderIcon}
+ * {@link AdaptiveIconDrawableCompat} representation of a {@link FolderIcon}
  */
 @TargetApi(Build.VERSION_CODES.O)
-public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
+public class FolderAdaptiveIcon extends AdaptiveIconDrawableCompat {
     private static final String TAG = "FolderAdaptiveIcon";
 
     private final Drawable mBadge;

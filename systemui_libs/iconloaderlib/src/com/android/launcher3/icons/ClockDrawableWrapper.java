@@ -51,6 +51,7 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntFunction;
 
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
 import app.catapult.launcher.icons.ClockMetadata;
 
 /**
@@ -58,7 +59,7 @@ import app.catapult.launcher.icons.ClockMetadata;
  * clock icons
  */
 @TargetApi(Build.VERSION_CODES.O)
-public class ClockDrawableWrapper extends AdaptiveIconDrawable implements BitmapInfo.Extender {
+public class ClockDrawableWrapper extends AdaptiveIconDrawableCompat implements BitmapInfo.Extender {
 
     private static final String TAG = "ClockDrawableWrapper";
 
@@ -114,7 +115,7 @@ public class ClockDrawableWrapper extends AdaptiveIconDrawable implements Bitmap
             ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(extras, resId -> {
                 Drawable bg = new ColorDrawable(Color.WHITE);
                 Drawable fg = themeData.mResources.getDrawable(resId).mutate();
-                return new AdaptiveIconDrawable(bg, fg);
+                return new AdaptiveIconDrawableCompat(bg, fg);
             });
             if (drawable != null) {
                 mThemeInfo = drawable.mAnimationInfo;
@@ -219,7 +220,7 @@ public class ClockDrawableWrapper extends AdaptiveIconDrawable implements Bitmap
         }
 
         if (ATLEAST_T && aid.getMonochrome() instanceof LayerDrawable) {
-            wrapper.mThemeInfo = info.copyForIcon(new AdaptiveIconDrawable(
+            wrapper.mThemeInfo = info.copyForIcon(new AdaptiveIconDrawableCompat(
                     new ColorDrawable(Color.WHITE), aid.getMonochrome().mutate()));
         }
         info.applyTime(Calendar.getInstance(), foreground);
@@ -229,7 +230,7 @@ public class ClockDrawableWrapper extends AdaptiveIconDrawable implements Bitmap
     @Override
     public ClockBitmapInfo getExtendedInfo(Bitmap bitmap, int color,
             BaseIconFactory iconFactory, float normalizationScale) {
-        AdaptiveIconDrawable background = new AdaptiveIconDrawable(
+        AdaptiveIconDrawable background = new AdaptiveIconDrawableCompat(
                 getBackground().getConstantState().newDrawable(), null);
         Bitmap flattenBG = iconFactory.createScaledBitmapWithShadow(background);
 

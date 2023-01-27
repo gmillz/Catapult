@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import app.catapult.launcher.settings
+import app.catapult.launcher.settings.Routes
 import app.catapult.launcher.settings.ui.components.NotificationDotsSetting
 import app.catapult.launcher.settings.ui.components.notificationDotsEnabled
 import app.catapult.launcher.settings.ui.components.notificationServiceEnabled
@@ -23,6 +24,12 @@ import com.gmillz.compose.settings.util.LocalNavController
 val generalScreens = listOf(
     SettingsScreen("icon_style") {
         IconStyleScreen()
+    },
+    SettingsScreen(Routes.ICON_SHAPE) {
+        IconShapeScreen()
+    },
+    SettingsScreen(Routes.CUSTOM_ICON_SHAPE_CREATOR) {
+        CustomIconShapeCreatorScreen()
     }
 )
 
@@ -41,6 +48,12 @@ fun GeneralScreen() {
                 title = stringResource(id = R.string.icon_style),
                 onClick = {
                     navController.navigate("icon_style")
+                }
+            )
+            SettingTemplate(
+                title = stringResource(id = R.string.icon_shape_title),
+                onClick = {
+                    navController.navigate(Routes.ICON_SHAPE)
                 }
             )
         }

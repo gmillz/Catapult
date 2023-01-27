@@ -40,7 +40,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Handler;
@@ -115,7 +114,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import app.catapult.launcher.CatapultAppKt;
 import app.catapult.launcher.CatapultAppWidgetHostView;
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
 import app.catapult.launcher.smartspace.provider.SmartspaceProvider;
 
 /**
@@ -247,7 +248,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
         BaseIconFactory iconFactory =
                 new BaseIconFactory(context, mIdp.fillResIconDpi, mIdp.iconBitmapSize) { };
         BitmapInfo iconInfo = iconFactory.createBadgedIconBitmap(
-                new AdaptiveIconDrawable(
+                new AdaptiveIconDrawableCompat(
                         new ColorDrawable(Color.WHITE),
                         new ColorDrawable(Color.WHITE)));
 
@@ -424,7 +425,9 @@ public class LauncherPreviewRenderer extends ContextWrapper
         }
 
         if (mWallpaperColorResources != null) {
-            view.setColorResources(mWallpaperColorResources);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                view.setColorResources(mWallpaperColorResources);
+            }
         }
 
         view.setTag(info);

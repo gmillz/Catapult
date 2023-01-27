@@ -39,6 +39,8 @@ import com.android.launcher3.util.FlagOp;
 
 import java.util.Objects;
 
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside
  * this package.
@@ -157,7 +159,7 @@ public class BaseIconFactory implements AutoCloseable {
      * @return
      */
     public BitmapInfo createIconBitmap(String placeholder, int color) {
-        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
+        AdaptiveIconDrawable drawable = new AdaptiveIconDrawableCompat(
                 new ColorDrawable(PLACEHOLDER_BACKGROUND_COLOR),
                 new CenterTextDrawable(placeholder, color));
         Bitmap icon = createIconBitmap(drawable, IconNormalizer.ICON_VISIBLE_AREA_FACTOR);
@@ -180,7 +182,7 @@ public class BaseIconFactory implements AutoCloseable {
         Drawable d = new FixedSizeBitmapDrawable(icon);
         float inset = getExtraInsetFraction();
         inset = inset / (1 + 2 * inset);
-        d = new AdaptiveIconDrawable(new ColorDrawable(Color.BLACK),
+        d = new AdaptiveIconDrawableCompat(new ColorDrawable(Color.BLACK),
                 new InsetDrawable(d, inset, inset, inset, inset));
         return createBadgedIconBitmap(d, options);
     }
@@ -303,8 +305,9 @@ public class BaseIconFactory implements AutoCloseable {
 
         if (shrinkNonAdaptiveIcons && !(icon instanceof AdaptiveIconDrawable)) {
             if (mWrapperIcon == null) {
-                mWrapperIcon = mContext.getDrawable(R.drawable.adaptive_icon_drawable_wrapper)
-                        .mutate();
+                Drawable background = new ColorDrawable(mContext.getColor(R.color.legacy_icon_background));
+                Drawable foreground = new FixedScaleDrawable();
+                mWrapperIcon = new AdaptiveIconDrawableCompat(background, foreground);
             }
             AdaptiveIconDrawable dr = (AdaptiveIconDrawable) mWrapperIcon;
             dr.setBounds(0, 0, 1, 1);
@@ -418,8 +421,9 @@ public class BaseIconFactory implements AutoCloseable {
 
     @NonNull
     public static Drawable getFullResDefaultActivityIcon(final int iconDpi) {
-        return Objects.requireNonNull(Resources.getSystem().getDrawableForDensity(
-                android.R.drawable.sym_def_app_icon, iconDpi));
+        Drawable icon = Resources.getSystem().getDrawableForDensity(
+                android.R.drawable.sym_def_app_icon, iconDpi);
+        return AdaptiveIconDrawableCompat.wrapNonNull(icon);
     }
 
     private int extractColor(@NonNull final Bitmap bitmap) {

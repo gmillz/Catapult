@@ -54,6 +54,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+import app.catapult.launcher.settings.Settings;
+
 /**
  * Abstract representation of the shape of an icon shape
  */
@@ -435,7 +439,7 @@ public abstract class IconShape {
 
         Region full = new Region(0, 0, size, size);
         Region iconR = new Region();
-        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
+        AdaptiveIconDrawable drawable = new AdaptiveIconDrawableCompat(
                 new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
         drawable.setBounds(0, 0, size, size);
         iconR.setPath(drawable.getIconMask(), full);

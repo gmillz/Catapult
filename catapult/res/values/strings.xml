@@ -69,4 +69,39 @@
     <string name="allow_widget_overlap">Allow overlap</string>
     <string name="show_top_shadow_title">Top shadow</string>
 
+    <!-- Icon Shape -->
+    <string name="icon_shape_system">System</string>
+    <string name="icon_shape_circle">Circle</string>
+    <string name="icon_shape_cylinder">Cylinder</string>
+    <string name="icon_shape_diamond">Diamond</string>
+    <string name="icon_shape_egg">Egg</string>
+    <string name="icon_shape_cupertino">iOS</string>
+    <string name="icon_shape_octagon">Octagon</string>
+    <string name="icon_shape_sammy">One UI</string>
+    <string name="icon_shape_rounded_square">Rounded Square</string>
+    <string name="icon_shape_sharp_square">Sharp Square</string>
+    <string name="icon_shape_square">Square</string>
+    <string name="icon_shape_squircle">Squircle</string>
+    <string name="icon_shape_teardrop">Teardrop</string>
+    <string name="icon_shape_title">Icon shape</string>
+
+    <!-- Custom Icon Shape -->
+    <string name="custom_icon_shape">Custom Icon Shape</string>
+    <string name="custom">Custom</string>
+    <string name="presets">Presets</string>
+    <string name="custom_icon_shape_create">Create Custom Icon Shape</string>
+    <string name="custom_icon_shape_edit">Edit Custom Icon Shape</string>
+    <string name="icon_shape_corner">Corner Shape</string>
+    <string name="icon_shape_corner_round">Round</string>
+    <string name="icon_shape_corner_squircle">Smooth</string>
+    <string name="icon_shape_corner_cut">Cut</string>
+    <string name="icon_shape_top_left">Top Left</string>
+    <string name="icon_shape_top_right">Top Right</string>
+    <string name="icon_shape_bottom_left">Bottom Left</string>
+    <string name="icon_shape_bottom_right">Bottom Right</string>
+    <string name="sliders">Sliders</string>
+    <string name="apply">Apply</string>
+    <string name="create">Create</string>
+
+
 </resources>

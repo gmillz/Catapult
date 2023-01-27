@@ -107,6 +107,9 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+
 /**
  * Various utilities shared amongst the Launcher's classes.
  */
@@ -720,7 +723,7 @@ public final class Utilities {
                 int[] colors = ThemedIconDrawable.getColors(context);
                 mono = mono.mutate();
                 mono.setTint(colors[1]);
-                return new AdaptiveIconDrawable(new ColorDrawable(colors[0]), mono);
+                return new AdaptiveIconDrawableCompat(new ColorDrawable(colors[0]), mono);
             }
         }
         return icon;

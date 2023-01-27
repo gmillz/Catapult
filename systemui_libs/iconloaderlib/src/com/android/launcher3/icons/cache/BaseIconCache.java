@@ -73,6 +73,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+
 public abstract class BaseIconCache {
 
     private static final String TAG = "BaseIconCache";
@@ -194,7 +196,8 @@ public abstract class BaseIconCache {
     private Drawable getFullResIcon(@Nullable final Resources resources, final int iconId) {
         if (resources != null && iconId != 0) {
             try {
-                return resources.getDrawableForDensity(iconId, mIconDpi);
+                Drawable icon = resources.getDrawableForDensity(iconId, mIconDpi);
+                return AdaptiveIconDrawableCompat.wrap(icon);
             } catch (Resources.NotFoundException e) { }
         }
         return getFullResDefaultActivityIcon(mIconDpi);
