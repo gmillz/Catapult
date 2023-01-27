@@ -3,12 +3,13 @@ package app.catapult.launcher.smartspace
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import com.android.launcher3.views.DoubleShadowBubbleTextView.ShadowInfo
 
 open class DoubleShadowTextView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
-) : AppCompatTextView(context, attrs) {
+) : TextView(context, attrs) {
 
     private val shadowInfo = ShadowInfo(context, attrs, 0)
 
