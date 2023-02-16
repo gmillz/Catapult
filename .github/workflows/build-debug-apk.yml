@@ -1,0 +1,53 @@
+name: Build debug APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "13" ]
+    paths-ignore:
+      - '.github/**'
+  pull_request:
+    branches: [ "13" ]
+    paths-ignore:
+      - '.github/**'
+
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Chek out repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          
+      - name: set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+
+      - name: Write signing info
+        if: github.repository == 'gmillz/Catapult'
+        run: |
+          if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
+            echo storePassword='${{ secrets.KEYSTORE_PASSWORD }}' >> keystore.properties
+            echo keyAlias='${{ secrets.KEY_ALIAS }}' >> keystore.properties
+            echo keyPassword='${{ secrets.KEY_PASSWORD }}' >> keystore.properties
+            echo storeFile='${{ github.workspace }}/release.jks' >> keystore.properties
+            echo ${{ secrets.KEYSTORE }} | base64 --decode > ${{ github.workspace }}/release.jks
+          fi
+      - name: Build release APK
+        run: ./gradlew assembleCatapultDebug
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Release APK
+          path: |
+            build/outputs/apk/catapult/release/*.apk
+            
