@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 33
+        targetSdk = 32
         applicationId = "app.catapult.launcher"
 
         versionCode = 1
