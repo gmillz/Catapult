@@ -51,7 +51,6 @@ import com.android.launcher3.util.Themes;
 import com.android.systemui.plugins.ResourceProvider;
 
 import app.catapult.extensions.ViewKt;
-import app.catapult.launcher.CatapultAppKt;
 
 /**
  * View scrim which draws behind hotseat and workspace
