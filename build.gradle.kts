@@ -28,6 +28,14 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    applicationVariants.configureEach {
+        outputs.configureEach {
+            val releaseType = name.split("-")[1]
+            (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
+                "Catapult_${versionName}_${releaseType}.apk"
+        }
+    }
+
     buildFeatures {
         compose = true
         aidl = true
@@ -54,6 +62,7 @@ android {
         getByName("debug") {
             isMinifyEnabled = false
             applicationIdSuffix = ".dev"
+            signingConfig = releaseSigning
         }
         getByName("release") {
             signingConfig = releaseSigning
