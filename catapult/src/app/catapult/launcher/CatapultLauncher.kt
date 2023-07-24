@@ -16,7 +16,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.ViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
@@ -43,9 +43,10 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
     override val savedStateRegistry = savedStateRegistryController.savedStateRegistry
-    override fun getLifecycle() = lifecycleRegistry
 
-    private val activityResultRegistry = object : ActivityResultRegistry() {
+    override val lifecycle = lifecycleRegistry
+
+    override val activityResultRegistry = object : ActivityResultRegistry() {
         override fun <I : Any?, O : Any?> onLaunch(
             requestCode: Int,
             contract: ActivityResultContract<I, O>,
@@ -132,7 +133,7 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     override fun setupViews() {
         super.setupViews()
         val launcherRootView = findViewById<LauncherRootView>(R.id.launcher)
-        ViewTreeLifecycleOwner.set(launcherRootView, this)
+        launcherRootView.setViewTreeLifecycleOwner(this)
         launcherRootView.setViewTreeSavedStateRegistryOwner(this)
     }
 
@@ -181,8 +182,6 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
-
-    override fun getActivityResultRegistry() = activityResultRegistry
 
     override fun getSupportedShortcuts(): Stream<SystemShortcut.Factory<*>> {
         return Stream.concat(

@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.android.systemui.plugins"
+    namespace = "com.android.systemui.plugin_core"
 
     compileSdk = 33
 

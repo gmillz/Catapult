@@ -40,6 +40,7 @@ import com.android.launcher3.util.FlagOp;
 import java.util.Objects;
 
 import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+import app.catapult.launcher.icons.R;
 
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside

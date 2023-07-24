@@ -18,6 +18,8 @@ package com.android.launcher3.icons;
 
 import android.content.Context;
 
+import app.catapult.launcher.icons.R;
+
 /**
  * Wrapper class to provide access to {@link BaseIconFactory} and also to provide pool of this class
  * that are threadsafe.

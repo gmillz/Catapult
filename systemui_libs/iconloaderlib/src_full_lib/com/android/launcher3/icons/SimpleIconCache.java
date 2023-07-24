@@ -38,6 +38,7 @@ import com.android.launcher3.icons.cache.BaseIconCache;
 
 import app.catapult.extensions.ApplicationInfoKt;
 import app.catapult.extensions.UserHandleKt;
+import app.catapult.launcher.icons.R;
 
 /**
  * Wrapper class to provide access to {@link BaseIconFactory} and also to provide pool of this class

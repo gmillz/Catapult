@@ -1,6 +1,7 @@
 package app.catapult.launcher
 
 import android.appwidget.AppWidgetProviderInfo
+import android.content.ComponentName
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -59,7 +60,7 @@ class CatapultAppWidgetHostView @JvmOverloads constructor(
     }
 
     companion object {
-        private val customLayouts = mapOf(
+        private val customLayouts = mapOf<ComponentName, Int>(
             SmartspaceAppWidgetProvider.componentName to R.layout.smartspace_widget
         )
 

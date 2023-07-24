@@ -29,6 +29,8 @@ import android.graphics.drawable.Drawable;
 
 import androidx.core.graphics.ColorUtils;
 
+import app.catapult.launcher.icons.R;
+
 /**
  * Subclass which draws a placeholder icon when the actual icon is not yet loaded
  */

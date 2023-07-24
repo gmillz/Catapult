@@ -104,5 +104,6 @@
     <string name="create">Create</string>
     <string name="background_opacity">Background opacity</string>
 
+    <string name="n_percent" translatable="false">%1$d%%</string>
 
 </resources>

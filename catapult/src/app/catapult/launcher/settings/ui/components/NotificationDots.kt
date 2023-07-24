@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
@@ -137,10 +138,9 @@ fun notificationDotsEnabled(context: Context) = callbackFlow {
 
 fun isNotificationServiceEnabled(context: Context): Boolean {
     val enabledListeners = Settings.Secure.getString(
-        context.contentResolver, "enabled_notification_listeners")
+        context.contentResolver, "enabled_notification_listeners")?: ""
     val myListener = ComponentName(context, NotificationListener::class.java)
-    return enabledListeners != null &&
-        (enabledListeners.contains(myListener.flattenToString())) ||
+    return (enabledListeners.contains(myListener.flattenToString())) ||
         enabledListeners.contains(myListener.flattenToShortString())
 }
 

@@ -56,6 +56,7 @@ import java.util.Calendar;
 import java.util.function.Supplier;
 
 import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+import app.catapult.launcher.icons.R;
 
 /**
  * Class to handle icon loading from different packages

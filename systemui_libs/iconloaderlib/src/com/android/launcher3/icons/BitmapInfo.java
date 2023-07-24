@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 
 import com.android.launcher3.util.FlagOp;
 
+import app.catapult.launcher.icons.R;
+
 public class BitmapInfo {
 
     static final int FLAG_WORK = 1 << 0;
