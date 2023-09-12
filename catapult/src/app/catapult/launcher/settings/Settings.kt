@@ -96,7 +96,7 @@ class Settings(context: Context): BaseSettings(context) {
     )
     val smartspaceMode = setting(
         key = stringPreferencesKey("smartspace_mode"),
-        defaultValue = SmartspaceMode.fromString("lawnchair"),
+        defaultValue = SmartspaceMode.fromString("catapult"),
         parse = { SmartspaceMode.fromString(it) },
         save = { it.toString() },
         onSet = { recreate() }

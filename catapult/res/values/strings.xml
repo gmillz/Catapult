@@ -29,7 +29,7 @@
     <string name="smartspace_calendar_gregorian">Gregorian</string>
     <string name="smartspace_calendar_persian">Persian</string>
     <string name="smartspace_mode_label">At a Glance Provider</string>
-    <string name="smartspace_mode_lawnchair">Lawnchair</string>
+    <string name="smartspace_mode_catapult">Catapult</string>
     <string name="smartspace_mode_google">Google</string>
     <string name="smartspace_mode_google_search">Google Search</string>
     <string name="smartspace_preferences">Preferences</string>
@@ -57,7 +57,7 @@
     <string name="accessibility_smartspace_page">Page %1$d of %2$d</string>
     <string name="smartspace_widget">At a Glance</string>
     <string name="smartspace_widget_toggle_label">Show on Home Screen</string>
-    <string name="smartspace_widget_toggle_description">At a Glance can be manually added by placing the "Lawnchair" widget.</string>
+    <string name="smartspace_widget_toggle_description">At a Glance can be manually added by placing the "Catapult" widget.</string>
     <string name="what_to_show">What to Show</string>
     <string name="preview_label">Preview</string>
     <string name="smartspace_date_and_time">Date &amp; Time</string>

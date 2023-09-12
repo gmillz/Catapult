@@ -21,7 +21,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import app.catapult.launcher.settings
 import app.catapult.launcher.settings.ui.components.SettingsLayout
 import app.catapult.launcher.smartspace.SmartspaceViewContainer
-import app.catapult.launcher.smartspace.model.LawnchairSmartspace
+import app.catapult.launcher.smartspace.model.CatapultSmartspace
 import app.catapult.launcher.smartspace.model.SmartspaceCalendar
 import app.catapult.launcher.smartspace.model.SmartspaceMode
 import app.catapult.launcher.smartspace.model.SmartspaceTimeFormat
@@ -43,13 +43,13 @@ fun SmartspaceScreen(
     val smartspaceController = settings.enableSmartspace.getController()
     val smartspaceModeController = settings.smartspaceMode.getController()
     val smartspaceProvider = SmartspaceProvider.INSTANCE.get(LocalContext.current)
-    val modeIsLawnchair = smartspaceModeController.state.value == LawnchairSmartspace
+    val modeIsCatapult = smartspaceModeController.state.value == CatapultSmartspace
 
     SettingsLayout(
         label = stringResource(id = R.string.smartspace_widget)
     ) {
         if (!fromWidget) {
-            SettingGroup(description = stringResource(id = R.string.smartspace_widget_toggle_description).takeIf { modeIsLawnchair }) {
+            SettingGroup(description = stringResource(id = R.string.smartspace_widget_toggle_description).takeIf { modeIsCatapult }) {
                 SettingSwitch(
                     controller = smartspaceController,
                     label = stringResource(id = R.string.smartspace_widget_toggle_label)
@@ -61,7 +61,7 @@ fun SmartspaceScreen(
                 }
             }
         }
-        Crossfade(targetState = (smartspaceController.state.value || fromWidget) && modeIsLawnchair) { targetState ->
+        Crossfade(targetState = (smartspaceController.state.value || fromWidget) && modeIsCatapult) { targetState ->
             if (targetState) {
                 Column {
                     SmartspacePreview()
