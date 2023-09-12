@@ -45,7 +45,7 @@ class CatapultShortcut {
     ) {
         override fun onClick(v: View?) {
             val outObj = Array<Any?>(1) { null }
-            var icon = Utilities.getFullDrawable(launcher, appInfo, 0, 0, true, outObj)
+            val icon = Utilities.getFullDrawable(launcher, appInfo, 0, 0, true, outObj)
             //if (mItemInfo.screenId != NO_ID && icon is BitmapInfo.Extender) {
             //    icon = icon
             //}

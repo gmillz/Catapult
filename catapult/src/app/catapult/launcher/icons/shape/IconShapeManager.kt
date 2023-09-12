@@ -16,7 +16,6 @@ class IconShapeManager(private val context: Context) {
     private val systemIconShape = getSystemShape()
 
     private fun getSystemShape(): IconShape {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) throw RuntimeException("not supported on < oreo")
 
         val iconMask = AdaptiveIconDrawable(null, null).iconMask
         val systemShape = findNearestShape(iconMask)

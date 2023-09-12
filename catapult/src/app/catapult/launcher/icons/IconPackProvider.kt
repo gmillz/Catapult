@@ -96,7 +96,7 @@ class IconPackProvider(private val context: Context) {
         packageManager: PackageManager,
         iconEntry: IconEntry,
         drawable: Drawable
-    ): Drawable? {
+    ): Drawable {
         val themedColors: IntArray = ThemedIconDrawable.getColors(context)
         val res = packageManager.getResourcesForApplication(iconEntry.packPackageName)
         @SuppressLint("DiscouragedApi")

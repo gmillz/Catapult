@@ -64,6 +64,7 @@ class CustomIconPack(
         }
     }
 
+    @SuppressLint("DiscouragedApi")
     fun createFromExternalPicker(icon: Intent.ShortcutIconResource): IconPickerItem? {
         val id = packResources.getIdentifier(icon.resourceName, null, null)
         if (id == 0) return null
@@ -169,6 +170,7 @@ class CustomIconPack(
         endCategory()
     }.flowOn(Dispatchers.IO)
 
+    @SuppressLint("DiscouragedApi")
     private fun getDrawableId(name: String) = idCache.getOrPut(name) {
         packResources.getIdentifier(name, "drawable", packPackageName)
     }

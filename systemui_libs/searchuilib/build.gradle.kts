@@ -4,11 +4,10 @@ plugins {
 
 android {
     namespace = "com.android.app.search"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 32
     }
 
     sourceSets {
@@ -27,11 +26,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
     }
 }
 
 dependencies {
-    implementation("androidx.core:core:1.10.1")
+    implementation("androidx.core:core:1.12.0")
 }

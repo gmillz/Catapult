@@ -6,6 +6,7 @@ import android.content.pm.LauncherApps
 import android.graphics.drawable.Drawable
 import android.os.Process
 import android.util.Log
+import androidx.appcompat.content.res.AppCompatResources
 import com.android.launcher3.R
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
@@ -19,7 +20,7 @@ class SystemIconPack(context: Context): IconPack(context, "system") {
     override val label = context.getString(R.string.system_icons)
 
     override val icon: Drawable
-        get() = context.getDrawable(R.drawable.ic_launcher_home)!!
+        get() = AppCompatResources.getDrawable(context, R.drawable.ic_launcher_home)!!
 
     private val appMap = run {
         val profiles = UserCache.INSTANCE.get(context).userProfiles

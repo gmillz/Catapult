@@ -97,11 +97,6 @@ class CatapultAppSearchAlgorithm @JvmOverloads constructor(
             // Do an intersection of the words in the query and each title, and filter out all the
             // apps that don't match all of the words in the query.
             val queryTextLower = query.lowercase(Locale.getDefault())
-            val result = ArrayList<AdapterItem?>()
-            val matcher = StringMatcherUtility.StringMatcher.getInstance()
-            var resultCount = 0
-            val total = apps.size
-            var i = 0
             val matches = FuzzySearch.extractSorted(queryTextLower, apps,
                                                     { it.sectionName + it.title},
                                                     WeightedRatio(), 65)

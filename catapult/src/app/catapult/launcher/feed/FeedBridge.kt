@@ -97,7 +97,8 @@ class FeedBridge(private val context: Context) {
                     return signingInfo.signingCertificateHistory.any { it.hashCode() == signatureHash }
                 }
                 else -> {
-                    val info = context.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+                    @Suppress("DEPRECATION") val info = context.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+                    @Suppress("DEPRECATION")
                     return if (info.signatures.any { it.hashCode() != signatureHash }) false else info.signatures.isNotEmpty()
                 }
             }

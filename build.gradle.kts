@@ -3,18 +3,18 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    id("com.android.application").version("8.0.2")
-    kotlin("android").version("1.9.0")
+    id("com.android.application").version("8.1.1")
+    kotlin("android").version("1.9.10")
     id("com.google.protobuf").version("0.9.4")
-    id("com.android.library") version "8.0.2" apply false
-    id("com.google.devtools.ksp") version "1.9.0-1.0.12"
-    kotlin("plugin.parcelize").version("1.9.0")
+    id("com.android.library") version "8.1.1" apply false
+    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+    kotlin("plugin.parcelize").version("1.9.10")
 }
 
 android {
     namespace = "com.android.launcher3"
     testNamespace = "com.android.launcher3.tests"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 28
@@ -43,7 +43,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.0"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -71,12 +71,12 @@ android {
     }
 
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(18)
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
     }
 
     flavorDimensions += "app"
@@ -112,8 +112,8 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.dynamicanimation:dynamicanimation:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
-    implementation("androidx.preference:preference-ktx:1.2.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.1")
+    implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.slice:slice-core:1.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.cardview:cardview:1.0.0")
@@ -132,14 +132,14 @@ dependencies {
     implementation("com.github.samanzamani:PersianDate:1.5.4")
 
     // Compose
-    implementation("androidx.compose.ui:ui:1.4.3")
-    implementation("androidx.compose.ui:ui-tooling:1.4.3")
+    implementation("androidx.compose.ui:ui:1.5.1")
+    implementation("androidx.compose.ui:ui-tooling:1.5.1")
     implementation("androidx.compose.material3:material3:1.1.1")
-    implementation("androidx.compose.material:material-icons-extended:1.4.3")
+    implementation("androidx.compose.material:material-icons-extended:1.5.1")
     implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("androidx.navigation:navigation-compose:2.6.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.4.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("androidx.navigation:navigation-compose:2.7.2")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("com.google.accompanist:accompanist-drawablepainter:0.28.0")
     implementation("com.google.accompanist:accompanist-permissions:0.28.0")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
@@ -160,7 +160,7 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:rules:1.5.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
-    androidTestImplementation("androidx.annotation:annotation:1.6.0")
+    androidTestImplementation("androidx.annotation:annotation:1.7.0")
 
     api("com.airbnb.android:lottie:5.2.0")
 
