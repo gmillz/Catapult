@@ -162,6 +162,12 @@ class Settings(context: Context): BaseSettings(context) {
         defaultValue = setOf()
     )
 
+    val showHiddenAppsInSearch = setting(
+        key = booleanPreferencesKey("show_hidden_apps_in_search"),
+        defaultValue = false,
+        onSet = { recreate() }
+    )
+
     init {
         initializeIconShape(iconShape.firstBlocking())
         iconShape.get()

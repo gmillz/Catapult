@@ -109,5 +109,6 @@
     <!-- Hidden Apps -->
     <string name="hidden_apps_title">Hidden Apps</string>
     <string name="hidden_apps_title_with_count">Hidden Apps (%1$d)</string>
+    <string name="show_hidden_apps_search_title">Show hidden apps in search</string>
 
 </resources>

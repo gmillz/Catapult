@@ -18,6 +18,8 @@ package app.catapult.launcher.allapps.search
 import android.content.Context
 import android.os.Handler
 import androidx.annotation.AnyThread
+import app.catapult.launcher.extensions.toComponentKey
+import app.catapult.launcher.settings
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.allapps.BaseAllAppsAdapter
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem
@@ -27,8 +29,9 @@ import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.search.SearchAlgorithm
 import com.android.launcher3.search.SearchCallback
-import com.android.launcher3.search.StringMatcherUtility
 import com.android.launcher3.util.Executors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import me.xdrop.fuzzywuzzy.algorithms.WeightedRatio
 import java.util.Locale
@@ -43,11 +46,21 @@ class CatapultAppSearchAlgorithm @JvmOverloads constructor(
     private val mAppState: LauncherAppState
     private val mResultHandler: Handler
     private val mAddNoResultsMessage: Boolean
+    private lateinit var hiddenApps: Set<String>
+    private var showHiddenAppsInSearch = false
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     init {
         mAppState = LauncherAppState.getInstance(context)
         mResultHandler = Handler(Executors.MAIN_EXECUTOR.looper)
         mAddNoResultsMessage = addNoResultsMessage
+
+        settings.hiddenApps.onEach(coroutineScope) {
+            hiddenApps = it
+        }
+        settings.showHiddenAppsInSearch.onEach(coroutineScope) {
+            showHiddenAppsInSearch = it
+        }
     }
 
     override fun cancel(interruptActiveRequests: Boolean) {
@@ -62,9 +75,14 @@ class CatapultAppSearchAlgorithm @JvmOverloads constructor(
                 app: LauncherAppState,
                 dataModel: BgDataModel, apps: AllAppsList
             ) {
+
+                val filteredApps = apps.data.asSequence()
+                    .filterHiddenApps()
+                    .toList()
+
                 val result: ArrayList<AdapterItem?> =
                     getTitleMatchResult(
-                        apps.data, query
+                        filteredApps, query
                     )
                 if (mAddNoResultsMessage && result.isEmpty()) {
                     result.add(
@@ -78,8 +96,15 @@ class CatapultAppSearchAlgorithm @JvmOverloads constructor(
         })
     }
 
+    private fun Sequence<AppInfo>.filterHiddenApps(): Sequence<AppInfo> {
+        return if (showHiddenAppsInSearch) {
+            this
+        } else {
+            filter { it.toComponentKey().toString() !in hiddenApps }
+        }
+    }
+
     companion object {
-        private const val MAX_RESULTS_COUNT = 5
         private fun getEmptyMessageAdapterItem(query: String): AdapterItem {
             val item = AdapterItem(BaseAllAppsAdapter.VIEW_TYPE_EMPTY_SEARCH)
             // Add a place holder info to propagate the query
