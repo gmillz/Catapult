@@ -9,10 +9,12 @@ import kotlinx.coroutines.flow.onEach
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import app.catapult.launcher.icons.AdaptiveIconDrawableCompat
 import app.catapult.launcher.icons.shape.IconShape
 import app.catapult.launcher.icons.shape.IconShapeManager
 import app.catapult.launcher.launcher
+import app.catapult.launcher.settings
 import app.catapult.launcher.smartspace.model.SmartspaceCalendar
 import app.catapult.launcher.smartspace.model.SmartspaceMode
 import app.catapult.launcher.smartspace.model.SmartspaceTimeFormat
@@ -153,6 +155,11 @@ class Settings(context: Context): BaseSettings(context) {
         key = floatPreferencesKey("drawer_background_opacity"),
         defaultValue = 1f,
         onSet = { recreate() }
+    )
+
+    val hiddenApps = setting(
+        key = stringSetPreferencesKey("hidden_apps"),
+        defaultValue = setOf()
     )
 
     init {

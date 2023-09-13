@@ -74,6 +74,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.allapps.CatapultAlphabeticalAppsList;
 
 /**
  * Base all apps view container.
@@ -824,7 +825,7 @@ public abstract class BaseAllAppsContainerView<T extends Context & ActivityConte
 
         AdapterHolder(int type) {
             mType = type;
-            mAppsList = new AlphabeticalAppsList<>(mActivityContext,
+            mAppsList = new CatapultAlphabeticalAppsList<>(mActivityContext,
                     isSearch() ? null : mAllAppsStore,
                     isWork() ? mWorkManager : null);
             BaseAdapterProvider[] adapterProviders =

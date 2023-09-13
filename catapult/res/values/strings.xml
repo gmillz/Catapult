@@ -106,4 +106,8 @@
 
     <string name="n_percent" translatable="false">%1$d%%</string>
 
+    <!-- Hidden Apps -->
+    <string name="hidden_apps_title">Hidden Apps</string>
+    <string name="hidden_apps_title_with_count">Hidden Apps (%1$d)</string>
+
 </resources>

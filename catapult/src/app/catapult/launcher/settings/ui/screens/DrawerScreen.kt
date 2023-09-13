@@ -6,13 +6,23 @@ import androidx.compose.ui.res.stringResource
 import app.catapult.launcher.settings
 import com.android.launcher3.R
 import com.gmillz.compose.settings.getController
+import com.gmillz.compose.settings.ui.SettingsScreen
 import com.gmillz.compose.settings.ui.components.SettingGroup
+import com.gmillz.compose.settings.ui.components.SettingTemplate
 import com.gmillz.compose.settings.ui.components.SettingsPage
 import com.gmillz.compose.settings.ui.components.SliderSetting
 import com.gmillz.compose.settings.util.LocalNavController
 
+
+val drawerScreens = listOf(
+    SettingsScreen("hidden_apps") {
+        HiddenAppsScreen()
+    }
+)
+
 @Composable
 fun DrawerScreen() {
+    val navController = LocalNavController.current
     SettingsPage(
         navController = LocalNavController.current,
         title = { Text(text = stringResource(id = R.string.drawer_title)) }
@@ -26,6 +36,13 @@ fun DrawerScreen() {
                 step = 0.1f,
                 valueRange = 0f..1f,
                 showAsPercentage = true,
+            )
+
+            SettingTemplate(
+                title = stringResource(id = R.string.hidden_apps_title),
+                onClick = {
+                    navController.navigate("hidden_apps")
+                }
             )
         }
     }

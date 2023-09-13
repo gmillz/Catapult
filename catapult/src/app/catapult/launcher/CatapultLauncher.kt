@@ -124,10 +124,10 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        launcher = this
         savedStateRegistryController.performRestore(savedInstanceState)
         super.onCreate(savedInstanceState)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        launcher = this
     }
 
     override fun setupViews() {
