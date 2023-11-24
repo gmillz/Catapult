@@ -17,10 +17,18 @@
 package com.android.launcher3.uioverrides;
 
 import android.app.Person;
+import android.content.Context;
+import android.content.pm.LauncherActivityInfo;
+import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutInfo;
 
 import com.android.launcher3.Utilities;
 
+import java.util.Map;
+
+/**
+ * A wrapper for the hidden API calls
+ */
 public class ApiWrapper {
 
     public static final boolean TASKBAR_DRAWN_IN_PROCESS = true;
@@ -28,5 +36,9 @@ public class ApiWrapper {
     public static Person[] getPersons(ShortcutInfo si) {
         Person[] persons = si.getPersons();
         return persons == null ? Utilities.EMPTY_PERSON_ARRAY : persons;
+    }
+
+    public static Map<String, LauncherActivityInfo> getActivityOverrides(Context context) {
+        return context.getSystemService(LauncherApps.class).getActivityOverrides();
     }
 }

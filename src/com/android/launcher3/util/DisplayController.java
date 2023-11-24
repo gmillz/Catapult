@@ -19,9 +19,12 @@ import static android.content.Intent.ACTION_CONFIGURATION_CHANGED;
 import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
 
+import static com.android.launcher3.LauncherPrefs.TASKBAR_PINNING;
 import static com.android.launcher3.Utilities.dpiFromPx;
+import static com.android.launcher3.config.FeatureFlags.ENABLE_TASKBAR_PINNING;
+import static com.android.launcher3.config.FeatureFlags.ENABLE_TRANSIENT_TASKBAR;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
-import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
+import static com.android.launcher3.util.FlagDebugUtils.appendFlag;
 import static com.android.launcher3.util.window.WindowManagerProxy.MIN_TABLET_WIDTH;
 
 import android.annotation.SuppressLint;
@@ -41,8 +44,11 @@ import android.view.Display;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 
+import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.window.CachedDisplayInfo;
 import com.android.launcher3.util.window.WindowManagerProxy;
 
@@ -53,6 +59,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 
 /**
  * Utility class to cache properties of default display to avoid a system RPC on every call.
@@ -62,6 +69,10 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
 
     private static final String TAG = "DisplayController";
     private static final boolean DEBUG = false;
+    private static boolean sTransientTaskbarStatusForTests;
+
+    // TODO(b/254119092) remove all logs with this tag
+    public static final String TASKBAR_NOT_DESTROYED_TAG = "b/254119092";
 
     public static final MainThreadInitializedObject<DisplayController> INSTANCE =
             new MainThreadInitializedObject<>(DisplayController::new);
@@ -93,9 +104,12 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
     private Info mInfo;
     private boolean mDestroyed = false;
 
+    private final LauncherPrefs mPrefs;
+
     private DisplayController(Context context) {
         mContext = context;
         mDM = context.getSystemService(DisplayManager.class);
+        mPrefs = LauncherPrefs.get(context);
 
         Display display = mDM.getDisplay(DEFAULT_DISPLAY);
         if (Utilities.ATLEAST_S) {
@@ -107,13 +121,14 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
         }
 
         // Initialize navigation mode change listener
-        mContext.registerReceiver(mReceiver,
-                getPackageFilter(TARGET_OVERLAY_PACKAGE, ACTION_OVERLAY_CHANGED));
+        mReceiver.registerPkgActions(mContext, TARGET_OVERLAY_PACKAGE, ACTION_OVERLAY_CHANGED);
 
         WindowManagerProxy wmProxy = WindowManagerProxy.INSTANCE.get(context);
         Context displayInfoContext = getDisplayInfoContext(display);
         mInfo = new Info(displayInfoContext, wmProxy,
                 wmProxy.estimateInternalDisplayBounds(displayInfoContext));
+        mInfo.mPerDisplayBounds.forEach((key, value) -> FileLog.i(TAG,
+                "(CTOR) perDisplayBounds - " + key + ": " + Arrays.deepToString(value)));
     }
 
     /**
@@ -121,6 +136,39 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
      */
     public static NavigationMode getNavigationMode(Context context) {
         return INSTANCE.get(context).getInfo().navigationMode;
+    }
+
+    /**
+     * Returns whether taskbar is transient.
+     */
+    public static boolean isTransientTaskbar(Context context) {
+        return INSTANCE.get(context).isTransientTaskbar();
+    }
+
+    /**
+     * Returns whether taskbar is transient.
+     */
+    public boolean isTransientTaskbar() {
+        // TODO(b/258604917): When running in test harness, use !sTransientTaskbarStatusForTests
+        //  once tests are updated to expect new persistent behavior such as not allowing long press
+        //  to stash.
+        if (!Utilities.isRunningInTestHarness()
+                && ENABLE_TASKBAR_PINNING.get()
+                && mPrefs.get(TASKBAR_PINNING)) {
+            return false;
+        }
+        return getInfo().navigationMode == NavigationMode.NO_BUTTON
+                && (Utilities.isRunningInTestHarness()
+                    ? sTransientTaskbarStatusForTests
+                    : ENABLE_TRANSIENT_TASKBAR.get());
+    }
+
+    /**
+     * Enables transient taskbar status for tests.
+     */
+    @VisibleForTesting
+    public static void enableTransientTaskbarForTests(boolean enable) {
+        sTransientTaskbarStatusForTests = enable;
     }
 
     @Override
@@ -173,6 +221,7 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
     @Override
     @TargetApi(Build.VERSION_CODES.S)
     public final void onConfigurationChanged(Configuration config) {
+        Log.d(TASKBAR_NOT_DESTROYED_TAG, "DisplayController#onConfigurationChanged: " + config);
         Display display = mWindowContext.getDisplay();
         if (config.densityDpi != mInfo.densityDpi
                 || config.fontScale != mInfo.fontScale
@@ -237,9 +286,12 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
         if (!newInfo.supportedBounds.equals(oldInfo.supportedBounds)
                 || !newInfo.mPerDisplayBounds.equals(oldInfo.mPerDisplayBounds)) {
             change |= CHANGE_SUPPORTED_BOUNDS;
+            newInfo.mPerDisplayBounds.forEach((key, value) -> FileLog.w(TAG,
+                    "(CHANGE_SUPPORTED_BOUNDS) perDisplayBounds - " + key + ": "
+                            + Arrays.deepToString(value)));
         }
         if (DEBUG) {
-            Log.d(TAG, "handleInfoChange - change: 0b" + Integer.toBinaryString(change));
+            Log.d(TAG, "handleInfoChange - change: " + getChangeFlagsString(change));
         }
 
         if (change != 0) {
@@ -307,12 +359,16 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
             realBounds = wmProxy.getRealBounds(displayInfoContext, displayInfo);
             if (cachedValue == null) {
                 // Unexpected normalizedDisplayInfo is found, recreate the cache
-                Log.e(TAG, "Unexpected normalizedDisplayInfo found, invalidating cache");
+                FileLog.e(TAG, "Unexpected normalizedDisplayInfo found, invalidating cache: "
+                        + normalizedDisplayInfo);
+                mPerDisplayBounds.forEach((key, value) -> FileLog.e(TAG,
+                        "(Invalid Cache) perDisplayBounds - " + key + ": " + Arrays.deepToString(
+                                value)));
                 mPerDisplayBounds.clear();
                 mPerDisplayBounds.putAll(wmProxy.estimateInternalDisplayBounds(displayInfoContext));
                 cachedValue = mPerDisplayBounds.get(normalizedDisplayInfo);
                 if (cachedValue == null) {
-                    Log.e(TAG, "normalizedDisplayInfo not found in estimation: "
+                    FileLog.e(TAG, "normalizedDisplayInfo not found in estimation: "
                             + normalizedDisplayInfo);
                     supportedBounds.add(realBounds);
                 }
@@ -353,9 +409,30 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
             return dpiFromPx(Math.min(bounds.bounds.width(), bounds.bounds.height()), densityDpi);
         }
 
+        /**
+         * Returns all displays for the device
+         */
+        public Set<CachedDisplayInfo> getAllDisplays() {
+            return Collections.unmodifiableSet(mPerDisplayBounds.keySet());
+        }
+
         public int getDensityDpi() {
             return densityDpi;
         }
+    }
+
+    /**
+     * Returns the given binary flags as a human-readable string.
+     * @see #CHANGE_ALL
+     */
+    public String getChangeFlagsString(int change) {
+        StringJoiner result = new StringJoiner("|");
+        appendFlag(result, change, CHANGE_ACTIVE_SCREEN, "CHANGE_ACTIVE_SCREEN");
+        appendFlag(result, change, CHANGE_ROTATION, "CHANGE_ROTATION");
+        appendFlag(result, change, CHANGE_DENSITY, "CHANGE_DENSITY");
+        appendFlag(result, change, CHANGE_SUPPORTED_BOUNDS, "CHANGE_SUPPORTED_BOUNDS");
+        appendFlag(result, change, CHANGE_NAVIGATION_MODE, "CHANGE_NAVIGATION_MODE");
+        return result.toString();
     }
 
     /**

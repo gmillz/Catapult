@@ -14,7 +14,7 @@ plugins {
 android {
     namespace = "com.android.launcher3"
     testNamespace = "com.android.launcher3.tests"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 28
@@ -26,6 +26,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        buildConfigField("boolean", "IS_STUDIO_BUILD", "true")
+        buildConfigField("boolean", "IS_DEBUG_DEVICE", "true")
+        buildConfigField("boolean", "QSB_ON_FIRST_SCREEN", "true")
     }
 
     applicationVariants.configureEach {
@@ -87,7 +91,7 @@ android {
 
     sourceSets.getByName("main") {
         res.setSrcDirs(listOf("res"))
-        java.setSrcDirs(listOf("src", "src_plugins", "src_flags", "src_shortcuts_overrides", "src_ui_overrides"))
+        java.setSrcDirs(listOf("src", "src_plugins", "src_flags", "src_shortcuts_overrides", "src_ui_overrides", "tests/shared"))
         manifest.srcFile("AndroidManifest-common.xml")
     }
 

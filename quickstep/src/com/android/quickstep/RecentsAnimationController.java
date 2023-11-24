@@ -18,11 +18,13 @@ package com.android.quickstep;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 import static com.android.quickstep.TaskAnimationManager.ENABLE_SHELL_TRANSITIONS;
+import static com.android.quickstep.util.ActiveGestureErrorDetector.GestureEvent.FINISH_RECENTS_ANIMATION;
 
 import android.content.Context;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.IRecentsAnimationController;
+import android.view.RemoteAnimationTarget;
 import android.view.SurfaceControl;
 import android.view.WindowManagerGlobal;
 import android.window.PictureInPictureSurfaceTransaction;
@@ -37,7 +39,6 @@ import com.android.quickstep.util.ActiveGestureLog;
 import com.android.systemui.shared.recents.model.ThumbnailData;
 import com.android.systemui.shared.system.InteractionJankMonitorWrapper;
 import com.android.systemui.shared.system.RecentsAnimationControllerCompat;
-import com.android.systemui.shared.system.RemoteAnimationTargetCompat;
 
 import java.util.function.Consumer;
 
@@ -114,7 +115,7 @@ public class RecentsAnimationController {
      * {@link RecentsAnimationCallbacks#onTasksAppeared}}.
      */
     @UiThread
-    public void removeTaskTarget(@NonNull RemoteAnimationTargetCompat target) {
+    public void removeTaskTarget(@NonNull RemoteAnimationTarget target) {
         UI_HELPER_EXECUTOR.execute(() -> mController.removeTask(target.taskId));
     }
 
@@ -149,24 +150,41 @@ public class RecentsAnimationController {
 
     @UiThread
     public void finishController(boolean toRecents, Runnable callback, boolean sendUserLeaveHint) {
-        if (mFinishRequested) {
-            // If finishing, add to pending finish callbacks, otherwise, if finished, adding to the
-            // destroyed RunnableList will just trigger the callback to be called immediately
-            mPendingFinishCallbacks.add(callback);
+        finishController(toRecents, callback, sendUserLeaveHint, false /* forceFinish */);
+    }
+
+    @UiThread
+    public void finishController(boolean toRecents, Runnable callback, boolean sendUserLeaveHint,
+            boolean forceFinish) {
+        mPendingFinishCallbacks.add(callback);
+        if (!forceFinish && mFinishRequested) {
+            // If finish has already been requested, then add the callback to the pending list.
+            // If already finished, then adding it to the destroyed RunnableList will just 
+            // trigger the callback to be called immediately
             return;
         }
+        ActiveGestureLog.INSTANCE.addLog(
+                /* event= */ "finishRecentsAnimation",
+                /* extras= */ toRecents,
+                /* gestureEvent= */ FINISH_RECENTS_ANIMATION);
 
         // Finish not yet requested
         mFinishRequested = true;
         mFinishTargetIsLauncher = toRecents;
         mOnFinishedListener.accept(this);
-        mPendingFinishCallbacks.add(callback);
-        UI_HELPER_EXECUTOR.execute(() -> {
+        Runnable finishCb = () -> {
             mController.finish(toRecents, sendUserLeaveHint);
             InteractionJankMonitorWrapper.end(InteractionJankMonitorWrapper.CUJ_QUICK_SWITCH);
             InteractionJankMonitorWrapper.end(InteractionJankMonitorWrapper.CUJ_APP_CLOSE_TO_HOME);
+            InteractionJankMonitorWrapper.end(
+                    InteractionJankMonitorWrapper.CUJ_APP_SWIPE_TO_RECENTS);
             MAIN_EXECUTOR.execute(mPendingFinishCallbacks::executeAllAndDestroy);
-        });
+        };
+        if (forceFinish) {
+            finishCb.run();
+        } else {
+            UI_HELPER_EXECUTOR.execute(finishCb);
+        }
     }
 
     /**

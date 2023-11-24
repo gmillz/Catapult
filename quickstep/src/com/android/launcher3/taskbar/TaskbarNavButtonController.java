@@ -27,6 +27,7 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_TASKBAR_IME_SWITCHER_BUTTON_TAP;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_TASKBAR_OVERVIEW_BUTTON_LONGPRESS;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_TASKBAR_OVERVIEW_BUTTON_TAP;
+import static com.android.systemui.shared.system.ActivityManagerWrapper.CLOSE_SYSTEM_WINDOWS_REASON_HOME_KEY;
 import static com.android.systemui.shared.system.ActivityManagerWrapper.CLOSE_SYSTEM_WINDOWS_REASON_RECENTS;
 import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_SCREEN_PINNING;
 
@@ -67,6 +68,7 @@ public class TaskbarNavButtonController implements TaskbarControllers.LoggableTa
 
     private long mLastScreenPinLongPress;
     private boolean mScreenPinned;
+    private boolean mAssistantLongPressEnabled;
 
     @Override
     public void dumpLogs(String prefix, PrintWriter pw) {
@@ -251,6 +253,10 @@ public class TaskbarNavButtonController implements TaskbarControllers.LoggableTa
         mStatsLogManager = null;
     }
 
+    public void setAssistantLongPressEnabled(boolean assistantLongPressEnabled) {
+        mAssistantLongPressEnabled = assistantLongPressEnabled;
+    }
+
     private void logEvent(StatsLogManager.LauncherEvent event) {
         if (mStatsLogManager == null) {
             Log.w(TAG, "No stats log manager to log taskbar button event");
@@ -260,6 +266,7 @@ public class TaskbarNavButtonController implements TaskbarControllers.LoggableTa
     }
 
     private void navigateHome() {
+        TaskUtils.closeSystemWindowsAsync(CLOSE_SYSTEM_WINDOWS_REASON_HOME_KEY);
         mService.getOverviewCommandHelper().addCommand(OverviewCommandHelper.TYPE_HOME);
     }
 
@@ -289,7 +296,7 @@ public class TaskbarNavButtonController implements TaskbarControllers.LoggableTa
     }
 
     private void startAssistant() {
-        if (mScreenPinned) {
+        if (mScreenPinned || !mAssistantLongPressEnabled) {
             return;
         }
         Bundle args = new Bundle();

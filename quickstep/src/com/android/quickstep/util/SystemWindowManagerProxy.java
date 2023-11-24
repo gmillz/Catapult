@@ -23,6 +23,8 @@ import android.view.Surface;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
+import com.android.internal.policy.SystemBarUtils;
+import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.util.window.CachedDisplayInfo;
 import com.android.launcher3.util.window.WindowManagerProxy;
@@ -45,12 +47,20 @@ public class SystemWindowManagerProxy extends WindowManagerProxy {
     }
 
     @Override
+    protected int getStatusBarHeight(Context context, boolean isPortrait, int statusBarInset) {
+        // See b/264656380, calculate the status bar height manually as the inset in the system
+        // server might not be updated by this point yet causing extra DeviceProfile updates
+        return SystemBarUtils.getStatusBarHeight(context);
+    }
+
+    @Override
     public ArrayMap<CachedDisplayInfo, WindowBounds[]> estimateInternalDisplayBounds(
             Context displayInfoContext) {
         ArrayMap<CachedDisplayInfo, WindowBounds[]> result = new ArrayMap<>();
         WindowManager windowManager = displayInfoContext.getSystemService(WindowManager.class);
         Set<WindowMetrics> possibleMaximumWindowMetrics =
                 windowManager.getPossibleMaximumWindowMetrics(DEFAULT_DISPLAY);
+        FileLog.d("b/283944974", "possibleMaximumWindowMetrics: " + possibleMaximumWindowMetrics);
         for (WindowMetrics windowMetrics : possibleMaximumWindowMetrics) {
             CachedDisplayInfo info = getDisplayInfo(windowMetrics, Surface.ROTATION_0);
             WindowBounds[] bounds = estimateWindowBounds(displayInfoContext, info);

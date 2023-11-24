@@ -80,7 +80,7 @@ class OverlayCallbackImpl(private val mLauncher: CatapultLauncher) : LauncherOve
     }
 
     override fun onOverlayScrollChanged(progress: Float) {
-        mLauncherOverlayCallbacks?.onScrollChanged(progress)
+        //mLauncherOverlayCallbacks?.onScrollChanged(progress)
     }
 
     override fun onServiceStateChanged(overlayAttached: Boolean, hotwordActive: Boolean) {
@@ -115,7 +115,7 @@ class OverlayCallbackImpl(private val mLauncher: CatapultLauncher) : LauncherOve
         if (newFlags != mFlags) {
             mFlagsChanged = true
             mFlags = newFlags
-            Utilities.getDevicePrefs(mLauncher).edit().putInt(PREF_PERSIST_FLAGS, newFlags).apply()
+            //Utilities.getDevicePrefs(mLauncher).edit().putInt(PREF_PERSIST_FLAGS, newFlags).apply()
         }
     }
 

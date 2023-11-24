@@ -20,7 +20,6 @@ import static android.view.MotionEvent.ACTION_POINTER_DOWN;
 import static android.view.MotionEvent.ACTION_UP;
 
 import static com.android.launcher3.Utilities.squaredHypot;
-import static com.android.launcher3.Utilities.squaredTouchSlop;
 import static com.android.launcher3.util.VelocityUtils.PX_PER_MS;
 import static com.android.quickstep.AbsSwipeUpHandler.MIN_PROGRESS_FOR_OVERVIEW;
 import static com.android.quickstep.MultiStateCallback.DEBUG_STATES;
@@ -37,14 +36,15 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.view.MotionEvent;
+import android.view.RemoteAnimationTarget;
 import android.view.VelocityTracker;
 
 import com.android.launcher3.R;
+import com.android.launcher3.anim.AnimatedFloat;
 import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.DisplayController;
-import com.android.quickstep.AnimatedFloat;
 import com.android.quickstep.GestureState;
 import com.android.quickstep.InputConsumer;
 import com.android.quickstep.MultiStateCallback;
@@ -52,14 +52,14 @@ import com.android.quickstep.RecentsAnimationCallbacks;
 import com.android.quickstep.RecentsAnimationController;
 import com.android.quickstep.RecentsAnimationDeviceState;
 import com.android.quickstep.RecentsAnimationTargets;
+import com.android.quickstep.RemoteAnimationTargets;
 import com.android.quickstep.TaskAnimationManager;
+import com.android.quickstep.util.SurfaceTransaction.SurfaceProperties;
 import com.android.quickstep.util.TransformParams;
 import com.android.quickstep.util.TransformParams.BuilderProxy;
 import com.android.systemui.shared.recents.model.ThumbnailData;
 import com.android.systemui.shared.system.ActivityManagerWrapper;
 import com.android.systemui.shared.system.InputMonitorCompat;
-import com.android.systemui.shared.system.RemoteAnimationTargetCompat;
-import com.android.systemui.shared.system.SyncRtSurfaceTransactionApplierCompat.SurfaceParams.Builder;
 
 import java.util.HashMap;
 
@@ -114,7 +114,7 @@ public class DeviceLockedInputConsumer implements InputConsumer,
         mDeviceState = deviceState;
         mTaskAnimationManager = taskAnimationManager;
         mGestureState = gestureState;
-        mTouchSlopSquared = squaredTouchSlop(context);
+        mTouchSlopSquared = mDeviceState.getSquaredTouchSlop();
         mTransformParams = new TransformParams();
         mInputMonitorCompat = inputMonitorCompat;
         mMaxTranslationY = context.getResources().getDimensionPixelSize(
@@ -153,7 +153,8 @@ public class DeviceLockedInputConsumer implements InputConsumer,
                 if (!mThresholdCrossed) {
                     // Cancel interaction in case of multi-touch interaction
                     int ptrIdx = ev.getActionIndex();
-                    if (!mDeviceState.getRotationTouchHelper().isInSwipeUpTouchRegion(ev, ptrIdx)) {
+                    if (!mDeviceState.getRotationTouchHelper().isInSwipeUpTouchRegion(ev, ptrIdx,
+                            mGestureState.getActivityInterface())) {
                         int action = ev.getAction();
                         ev.setAction(ACTION_CANCEL);
                         finishTouchTracking(ev);
@@ -226,6 +227,10 @@ public class DeviceLockedInputConsumer implements InputConsumer,
                     mStateCallback.setState(STATE_HANDLER_INVALIDATED);
                 }
             });
+            RemoteAnimationTargets targets = mTransformParams.getTargetSet();
+            if (targets != null) {
+                targets.addReleaseCheck(new DeviceLockedReleaseCheck(animator));
+            }
             animator.start();
         } else {
             mStateCallback.setState(STATE_HANDLER_INVALIDATED);
@@ -290,9 +295,9 @@ public class DeviceLockedInputConsumer implements InputConsumer,
 
     @Override
     public void onBuildTargetParams(
-            Builder builder, RemoteAnimationTargetCompat app, TransformParams params) {
+            SurfaceProperties builder, RemoteAnimationTarget app, TransformParams params) {
         mMatrix.setTranslate(0, mProgress.value * mMaxTranslationY);
-        builder.withMatrix(mMatrix);
+        builder.setMatrix(mMatrix);
     }
 
     @Override
@@ -303,5 +308,28 @@ public class DeviceLockedInputConsumer implements InputConsumer,
     @Override
     public boolean allowInterceptByParent() {
         return !mThresholdCrossed;
+    }
+
+    private static final class DeviceLockedReleaseCheck extends
+            RemoteAnimationTargets.ReleaseCheck {
+
+        private DeviceLockedReleaseCheck(Animator animator) {
+            setCanRelease(true);
+
+            animator.addListener(new AnimatorListenerAdapter() {
+
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    setCanRelease(false);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    setCanRelease(true);
+                }
+            });
+        }
     }
 }

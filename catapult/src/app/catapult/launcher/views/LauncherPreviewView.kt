@@ -14,14 +14,15 @@ import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherSettings.Favorites.CONTAINER
 import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT
-import com.android.launcher3.LauncherSettings.Favorites.PREVIEW_CONTENT_URI
 import com.android.launcher3.LauncherSettings.Favorites.SCREEN
+import com.android.launcher3.LauncherSettings.Favorites.TABLE_NAME
 import com.android.launcher3.R
 import com.android.launcher3.graphics.LauncherPreviewRenderer
 import com.android.launcher3.model.BgDataModel
-import com.android.launcher3.model.GridSizeMigrationTaskV2
+import com.android.launcher3.model.GridSizeMigrationUtil
+import com.android.launcher3.model.LauncherBinder
 import com.android.launcher3.model.LoaderTask
-import com.android.launcher3.model.ModelDelegate
+import com.android.launcher3.provider.LauncherDbUtils
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
@@ -82,23 +83,34 @@ class LauncherPreviewView(
 
     @WorkerThread
     private fun loadModelData() {
-        val migrated = doGridMigrationIfNecessary()
-
         val inflationContext = ContextThemeWrapper(appContext, Themes.getActivityThemeRes(context))
-        if (migrated) {
+        if (GridSizeMigrationUtil.needsToMigrate(inflationContext, idp)) {
             val previewContext = LauncherPreviewRenderer.PreviewContext(inflationContext, idp)
+            // Copy existing data to preview DB
+            LauncherDbUtils.copyTable(LauncherAppState.getInstance(context)
+                .model.modelDbController.db,
+                TABLE_NAME,
+                LauncherAppState.getInstance(previewContext)
+                    .model.modelDbController.db,
+                TABLE_NAME,
+                context
+            )
+            LauncherAppState.getInstance(previewContext)
+                .model.modelDbController.clearEmptyDbFlag()
+
+            val bgModel = BgDataModel()
             object : LoaderTask(
                 LauncherAppState.getInstance(previewContext),
                 null,
-                BgDataModel(),
-                ModelDelegate(),
-                null
+                bgModel,
+                LauncherAppState.getInstance(previewContext).model.modelDelegate,
+                LauncherBinder(LauncherAppState.getInstance(previewContext), bgModel, null, arrayOf())
             ) {
                 override fun run() {
                     loadWorkspace(
                         emptyList(),
-                        PREVIEW_CONTENT_URI,
-                        "$SCREEN = 0 or $CONTAINER = $CONTAINER_HOTSEAT"
+                        "$SCREEN = 0 or $CONTAINER = $CONTAINER_HOTSEAT",
+                        null
                     )
                     MAIN_EXECUTOR.execute {
                         renderView(previewContext, mBgDataModel, mWidgetProvidersMap)
@@ -118,15 +130,6 @@ class LauncherPreviewView(
                 }
             }
         }
-    }
-
-    @WorkerThread
-    private fun doGridMigrationIfNecessary(): Boolean {
-        val needsToMigrate = GridSizeMigrationTaskV2.needsToMigrate(context, idp)
-        if (!needsToMigrate) {
-            return false
-        }
-        return GridSizeMigrationTaskV2.migrateGridIfNeeded(context, idp)
     }
 
     @UiThread

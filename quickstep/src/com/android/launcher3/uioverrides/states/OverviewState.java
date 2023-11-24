@@ -75,9 +75,17 @@ public class OverviewState extends LauncherState {
     @Override
     public ScaleAndTranslation getWorkspaceScaleAndTranslation(Launcher launcher) {
         RecentsView recentsView = launcher.getOverviewPanel();
-        float workspacePageHeight = launcher.getDeviceProfile().getCellLayoutHeight();
         recentsView.getTaskSize(sTempRect);
-        float scale = (float) sTempRect.height() / workspacePageHeight;
+        float scale;
+        DeviceProfile deviceProfile = launcher.getDeviceProfile();
+        if (deviceProfile.isTwoPanels) {
+            // In two panel layout, width does not include both panels or space between them, so
+            // use height instead. We do not use height for handheld, as cell layout can be
+            // shorter than a task and we want the workspace to scale down to task size.
+            scale = (float) sTempRect.height() / deviceProfile.getCellLayoutHeight();
+        } else {
+            scale = (float) sTempRect.width() / deviceProfile.getCellLayoutWidth();
+        }
         float parallaxFactor = 0.5f;
         return new ScaleAndTranslation(scale, 0, -getDefaultSwipeHeight(launcher) * parallaxFactor);
     }
@@ -103,8 +111,8 @@ public class OverviewState extends LauncherState {
     }
 
     @Override
-    public boolean isTaskbarStashed(Launcher launcher) {
-        return true;
+    public boolean isTaskbarAlignedWithHotseat(Launcher launcher) {
+        return false;
     }
 
     @Override
@@ -115,6 +123,18 @@ public class OverviewState extends LauncherState {
     @Override
     public boolean displayOverviewTasksAsGrid(DeviceProfile deviceProfile) {
         return deviceProfile.isTablet;
+    }
+
+    @Override
+    public boolean disallowTaskbarGlobalDrag() {
+        // Disable global drag in overview
+        return true;
+    }
+
+    @Override
+    public boolean allowTaskbarInitialSplitSelection() {
+        // Allow split select from taskbar items in overview
+        return true;
     }
 
     @Override
