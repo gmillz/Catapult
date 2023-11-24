@@ -59,6 +59,32 @@ public class ShadowGenerator {
     }
 
     public synchronized void recreateIcon(Bitmap icon, Canvas out) {
+        recreateIcon(icon, mDefaultBlurMaskFilter, AMBIENT_SHADOW_ALPHA, KEY_SHADOW_ALPHA, out);
+    }
+
+    public synchronized void recreateIcon(Bitmap icon, BlurMaskFilter blurMaskFilter,
+                                          int ambientAlpha, int keyAlpha, Canvas out) {
+        if (ENABLE_SHADOWS) {
+            int[] offset = new int[2];
+            mBlurPaint.setMaskFilter(blurMaskFilter);
+            Bitmap shadow = icon.extractAlpha(mBlurPaint, offset);
+
+            // Draw ambient shadow
+            mDrawPaint.setAlpha(ambientAlpha);
+            out.drawBitmap(shadow, offset[0], offset[1], mDrawPaint);
+
+            // Draw key shadow
+            mDrawPaint.setAlpha(keyAlpha);
+            out.drawBitmap(shadow, offset[0], offset[1] + KEY_SHADOW_DISTANCE * mIconSize,
+                    mDrawPaint);
+        }
+
+        // Draw the icon
+        mDrawPaint.setAlpha(255);
+        out.drawBitmap(icon, 0, 0, mDrawPaint);
+    }
+
+    public synchronized void drawShadow(Bitmap icon, Canvas out) {
         if (ENABLE_SHADOWS) {
             int[] offset = new int[2];
             mBlurPaint.setMaskFilter(mDefaultBlurMaskFilter);
@@ -73,10 +99,6 @@ public class ShadowGenerator {
             out.drawBitmap(shadow, offset[0], offset[1] + KEY_SHADOW_DISTANCE * mIconSize,
                     mDrawPaint);
         }
-
-        // Draw the icon
-        mDrawPaint.setAlpha(255);
-        out.drawBitmap(icon, 0, 0, mDrawPaint);
     }
 
     /** package private **/

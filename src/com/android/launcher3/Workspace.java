@@ -1152,9 +1152,6 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         } else {
             mIsEventOverFirstPagePinnedItem = false;
         }
-        if (!mIsEventOverQsb) {
-            mIsEventOverQsb = isEventOverQsb(mXDown, mYDown);
-        }
     }
 
     private boolean isEventOverQsb(float x, float y) {

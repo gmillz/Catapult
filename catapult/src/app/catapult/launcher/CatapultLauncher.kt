@@ -133,7 +133,7 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     override fun setupViews() {
         super.setupViews()
         val launcherRootView = findViewById<LauncherRootView>(R.id.launcher)
-        launcherRootView.setViewTreeLifecycleOwner(this)
+        //launcherRootView.setViewTreeLifecycleOwner(this)
         launcherRootView.setViewTreeSavedStateRegistryOwner(this)
     }
 

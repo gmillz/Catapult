@@ -46,10 +46,13 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.os.BuildCompat;
 import androidx.core.util.Pair;
 
 import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.LauncherFiles;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.ComponentWithLabel.ComponentCachingLogic;
 import com.android.launcher3.icons.cache.BaseIconCache;
@@ -108,7 +111,7 @@ public class IconCache extends BaseIconCache {
 
     private int mPendingIconRequestCount = 0;
 
-    public IconCache(Context context, InvariantDeviceProfile idp) {
+    public @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class) IconCache(Context context, InvariantDeviceProfile idp) {
         this(context, idp, LauncherFiles.APP_ICONS_DB, new CatapultIconProvider(context));
     }
 

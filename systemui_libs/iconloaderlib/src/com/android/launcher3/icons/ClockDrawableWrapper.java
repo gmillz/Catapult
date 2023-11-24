@@ -232,7 +232,8 @@ public class ClockDrawableWrapper extends AdaptiveIconDrawableCompat implements 
             BaseIconFactory iconFactory, float normalizationScale) {
         AdaptiveIconDrawable background = new AdaptiveIconDrawableCompat(
                 getBackground().getConstantState().newDrawable(), null);
-        Bitmap flattenBG = iconFactory.createScaledBitmapWithShadow(background);
+        Bitmap flattenBG = iconFactory.createScaledBitmap(background,
+                BaseIconFactory.MODE_HARDWARE_WITH_SHADOW);
 
         // Only pass theme info if mono-icon is enabled
         AnimationInfo themeInfo = iconFactory.mMonoIconEnabled ? mThemeInfo : null;
