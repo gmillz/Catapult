@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace = "app.catapult.launcher.icons"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
     }
 
     sourceSets {
@@ -37,6 +37,6 @@ android {
 dependencies {
     implementation(project(":extensions"))
 
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
 }

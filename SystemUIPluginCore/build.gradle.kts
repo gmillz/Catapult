@@ -5,7 +5,7 @@ plugins {
 android {
     namespace = "com.android.systemui.plugin_core"
 
-    compileSdk = 33
+    compileSdk = 34
 
     sourceSets {
         named("main") {

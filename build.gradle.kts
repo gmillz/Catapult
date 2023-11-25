@@ -3,12 +3,12 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    id("com.android.application").version("8.0.2")
-    kotlin("android").version("1.9.0")
+    id("com.android.application").version("8.1.4")
+    kotlin("android").version("1.9.20")
     id("com.google.protobuf").version("0.9.4")
-    id("com.android.library") version "8.0.2" apply false
-    id("com.google.devtools.ksp") version "1.9.0-1.0.12"
-    kotlin("plugin.parcelize").version("1.9.0")
+    id("com.android.library") version "8.1.4" apply false
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    kotlin("plugin.parcelize").version("1.9.20")
 }
 
 android {
@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 32
+        targetSdk = 34
         applicationId = "app.catapult.launcher"
 
         versionCode = 1
@@ -47,7 +47,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.0"
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
 
     val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -117,12 +117,12 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.dynamicanimation:dynamicanimation:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
-    implementation("androidx.preference:preference-ktx:1.2.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.slice:slice-core:1.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.cardview:cardview:1.0.0")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation(project(":iconloaderlib"))
     implementation(project(":SystemUIPluginCore"))
@@ -137,15 +137,15 @@ dependencies {
     implementation("com.github.samanzamani:PersianDate:1.5.4")
 
     // Compose
-    implementation("androidx.compose.ui:ui:1.4.3")
-    implementation("androidx.compose.ui:ui-tooling:1.4.3")
-    implementation("androidx.compose.material3:material3:1.1.1")
-    implementation("androidx.compose.material:material-icons-extended:1.4.3")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("androidx.navigation:navigation-compose:2.6.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.4.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation("com.google.accompanist:accompanist-drawablepainter:0.28.0")
+    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.ui:ui-tooling:1.5.4")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation("androidx.activity:activity-compose:1.8.1")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("com.google.accompanist:accompanist-drawablepainter:0.30.1")
     implementation("com.google.accompanist:accompanist-permissions:0.28.0")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
     implementation("com.google.accompanist:accompanist-pager:0.28.0")
@@ -153,9 +153,9 @@ dependencies {
     implementation("com.google.accompanist:accompanist-flowlayout:0.20.0")
 
     // Room Database
-    implementation("androidx.room:room-runtime:2.5.2")
-    implementation("androidx.room:room-ktx:2.5.2")
-    ksp("androidx.room:room-compiler:2.5.2")
+    implementation("androidx.room:room-runtime:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
+    ksp("androidx.room:room-compiler:2.6.0")
     implementation("com.google.code.gson:gson:2.10")
 
     testImplementation("junit:junit:4.13.2")
@@ -165,7 +165,7 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:rules:1.5.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
-    androidTestImplementation("androidx.annotation:annotation:1.6.0")
+    androidTestImplementation("androidx.annotation:annotation:1.7.0")
 
     api("com.airbnb.android:lottie:5.2.0")
 
