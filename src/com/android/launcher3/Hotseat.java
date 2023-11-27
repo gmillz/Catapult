@@ -16,6 +16,7 @@
 
 package com.android.launcher3;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -33,9 +34,6 @@ import app.catapult.launcher.CatapultAppKt;
  * View class that represents the bottom row of the home screen.
  */
 public class Hotseat extends CellLayout implements Insettable {
-
-    // Ratio of empty space, qsb should take up to appear visually centered.
-    public static final float QSB_CENTER_FACTOR = .325f;
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private boolean mHasVerticalHotseat;
@@ -92,6 +90,7 @@ public class Hotseat extends CellLayout implements Insettable {
         }
     }
 
+    @SuppressLint("RtlHardcoded")
     @Override
     public void setInsets(Rect insets) {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
@@ -137,15 +136,15 @@ public class Hotseat extends CellLayout implements Insettable {
         return false;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // See comment in #onInterceptTouchEvent
         if (mSendTouchToWorkspace) {
             final int action = event.getAction();
             switch (action & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:
-                    mSendTouchToWorkspace = false;
+                case MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
+                        mSendTouchToWorkspace = false;
             }
             return mWorkspace.onTouchEvent(event);
         }
@@ -158,7 +157,12 @@ public class Hotseat extends CellLayout implements Insettable {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         DeviceProfile dp = mActivity.getDeviceProfile();
-        mQsb.measure(MeasureSpec.makeMeasureSpec(dp.hotseatQsbWidth, MeasureSpec.EXACTLY),
+
+        int qsbWidth = dp.isQsbInline
+                ? dp.hotseatQsbWidth
+                : getShortcutsAndWidgets().getMeasuredWidth();
+
+        mQsb.measure(MeasureSpec.makeMeasureSpec(qsbWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(dp.hotseatQsbHeight, MeasureSpec.EXACTLY));
     }
 
@@ -195,10 +199,6 @@ public class Hotseat extends CellLayout implements Insettable {
      */
     public void setQsbAlpha(float alpha) {
         mQsb.setAlpha(alpha);
-    }
-
-    public float getIconsAlpha() {
-        return getShortcutsAndWidgets().getAlpha();
     }
 
     /**
