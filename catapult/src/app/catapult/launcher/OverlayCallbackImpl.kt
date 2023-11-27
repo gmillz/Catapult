@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import app.catapult.launcher.feed.FeedBridge
-import com.android.launcher3.Utilities
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.google.android.libraries.launcherclient.ISerializableScrollCallback
 import com.google.android.libraries.launcherclient.LauncherClient
@@ -80,7 +79,7 @@ class OverlayCallbackImpl(private val mLauncher: CatapultLauncher) : LauncherOve
     }
 
     override fun onOverlayScrollChanged(progress: Float) {
-        //mLauncherOverlayCallbacks?.onScrollChanged(progress)
+        mLauncherOverlayCallbacks?.onOverlayScrollChanged(progress)
     }
 
     override fun onServiceStateChanged(overlayAttached: Boolean, hotwordActive: Boolean) {
@@ -115,7 +114,7 @@ class OverlayCallbackImpl(private val mLauncher: CatapultLauncher) : LauncherOve
         if (newFlags != mFlags) {
             mFlagsChanged = true
             mFlags = newFlags
-            //Utilities.getDevicePrefs(mLauncher).edit().putInt(PREF_PERSIST_FLAGS, newFlags).apply()
+            mLauncher.devicePrefs.edit().putInt(PREF_PERSIST_FLAGS, newFlags).apply()
         }
     }
 

@@ -21,6 +21,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
+import androidx.annotation.NonNull;
+
 import java.lang.ref.WeakReference;
 
 import app.catapult.launcher.feed.FeedBridge;
@@ -85,7 +87,7 @@ public class LauncherClient {
         }
 
         @Override
-        public boolean handleMessage(Message message) {
+        public boolean handleMessage(@NonNull Message message) {
             if (mClient == null) {
                 return true;
             }

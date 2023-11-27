@@ -16,7 +16,6 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
@@ -27,6 +26,7 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherRootView
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.ItemInfoWithIcon
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
@@ -146,6 +146,12 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         return runBlocking {
             ItemOverrideRepository.INSTANCE.get(this@CatapultLauncher)
                 .get(ComponentKey(info.targetComponent, info.user), info.container)
+        }
+    }
+
+    override fun registerBackDispatcher() {
+        if (Utilities.ATLEAST_T) {
+            super.registerBackDispatcher()
         }
     }
 

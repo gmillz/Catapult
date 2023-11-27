@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
+import android.window.BackEvent;
 import android.window.OnBackAnimationCallback;
 
 import androidx.annotation.IntDef;
@@ -50,8 +51,7 @@ import java.lang.annotation.RetentionPolicy;
  * Base class for a View which shows a floating UI on top of the launcher UI.
  */
 @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-public abstract class AbstractFloatingView extends LinearLayout implements TouchController,
-        OnBackAnimationCallback {
+public abstract class AbstractFloatingView extends LinearLayout implements TouchController {
 
     @IntDef(flag = true, value = {
             TYPE_COMPOSE_VIEW,
@@ -138,6 +138,23 @@ public abstract class AbstractFloatingView extends LinearLayout implements Touch
 
     protected boolean mIsOpen;
 
+    private OnBackAnimationCallback mOnBackAnimationCallback = new OnBackAnimationCallback() {
+        @Override
+        public void onBackInvoked() {
+            AbstractFloatingView.this.onBackInvoked();
+        }
+
+        @Override
+        public void onBackProgressed(BackEvent backEvent) {
+            AbstractFloatingView.this.onBackProgressed(backEvent);
+        }
+
+        @Override
+        public void onBackCancelled() {
+            AbstractFloatingView.this.onBackCancelled();
+        }
+    };
+
     public AbstractFloatingView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -184,9 +201,19 @@ public abstract class AbstractFloatingView extends LinearLayout implements Touch
         return true;
     }
 
-    @Override
+    //@Override
     public void onBackInvoked() {
         close(true);
+    }
+
+    public void onBackProgressed(BackEvent backEvent) {
+    }
+
+    public void onBackCancelled() {
+    }
+
+    public OnBackAnimationCallback getOnBackAnimationCallback() {
+        return mOnBackAnimationCallback;
     }
 
     @Override

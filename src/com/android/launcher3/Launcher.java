@@ -634,7 +634,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         AbstractFloatingView topView =
                 AbstractFloatingView.getTopOpenView(Launcher.this);
         if (topView != null && topView.canHandleBack()) {
-            return topView;
+            return topView.getOnBackAnimationCallback();
         }
 
         // #4 state handler
