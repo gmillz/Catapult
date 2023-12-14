@@ -101,7 +101,6 @@ fun CustomIconShapeCreatorScreen() {
         IconShapeCornerSettingGroup(
             selectedIconShape = selectedIconShape.value,
             onSelectedIconShapeChange = { newIconShape ->
-                Log.d("TEST", "here")
                 selectedIconShape.value = newIconShape
             }
         )

@@ -21,7 +21,6 @@ class CatapultShortcut {
 
     companion object {
         val CUSTOMIZE = SystemShortcut.Factory<CatapultLauncher> { activity, itemInfo, view ->
-            Log.d("TEST", "item type - ${itemInfo.container}")
             getAppInfo(activity, itemInfo)?.let { Customize(activity, it, itemInfo, view) }
         }
 

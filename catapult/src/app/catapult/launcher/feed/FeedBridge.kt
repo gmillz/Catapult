@@ -38,7 +38,6 @@ class FeedBridge(private val context: Context) {
 
     private fun customBridgeOrNull(): CustomBridgeInfo? {
         val feedProvider = settings.feedProvider.firstBlocking()
-        Log.d("TEST", "feedProvider - $feedProvider")
         return if (feedProvider.isNotBlank()) {
             val bridge = CustomBridgeInfo(feedProvider)
             if (bridge.isAvailable()) bridge else null

@@ -120,7 +120,6 @@ fun CustomizeAppDialog(
     container: Int,
     onClose: () -> Unit
 ) {
-    Log.d("TEST", "CustomizeAppDialog, $container, $componentKey")
     val context = LocalContext.current
     val itemRepo = ItemOverrideRepository.INSTANCE.get(LocalContext.current)
     val itemOverride = remember {
@@ -140,7 +139,6 @@ fun CustomizeAppDialog(
     val request = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
-            Log.d("TEST", "onResult")
             if (it.resultCode != Activity.RESULT_OK) {
                 return@rememberLauncherForActivityResult
             }
@@ -150,7 +148,6 @@ fun CustomizeAppDialog(
                 iconEntry.value = item.toIconEntry()
                 CoroutineScope(Dispatchers.IO).launch {
                     itemOverride.value.iconPickerItem = item
-                    Log.d("TEST", "set new icon")
                 }
             }
             //onClose()
@@ -166,7 +163,6 @@ fun CustomizeAppDialog(
             CoroutineScope(Dispatchers.IO).launch {
                 val item = itemRepo.get(componentKey, container)
                 MainScope().launch {
-                    Log.d("TEST", "setting itemOverride for $componentKey")
                     if (item != null) {
                         itemOverride.value = item
                         if (!item.overrideTitle.isNullOrEmpty()) {
@@ -182,7 +178,6 @@ fun CustomizeAppDialog(
     DisposableEffect(key1 = itemOverride) {
         //title = itemOverride.value.overrideTitle?: defaultTitle
         onDispose {
-            Log.d("TEST", "onDispose")
             val previousTitle = itemOverride.value.overrideTitle
             val newTitle = if (title != defaultTitle) title else null
             if (newTitle != previousTitle) {

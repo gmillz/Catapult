@@ -149,7 +149,6 @@ fun IconPackItem(
                 contentDescription = null,
                 tint = Color.Unspecified
             )
-            Log.d("TEST", "iconPack - ${iconPack.label} - ${iconPack.packPackageName}")
             Text(
                 text = iconPack.label,
                 textAlign = TextAlign.Center,

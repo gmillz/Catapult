@@ -46,7 +46,6 @@ class SystemIconPack(context: Context): IconPack(context, "system") {
     override fun getClocks(): MutableSet<ComponentName> = mutableSetOf()
 
     override fun getIcon(iconEntry: IconEntry, iconDpi: Int): Drawable? {
-        Log.d("TEST", "system icon pack getIcon")
         val key = ComponentKey.fromString(iconEntry.name)
         val app = appMap[key]?: return null
         return app.getIcon(iconDpi)

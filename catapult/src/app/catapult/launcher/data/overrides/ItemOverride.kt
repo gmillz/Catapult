@@ -23,7 +23,6 @@ data class ItemOverride(
     val container: Int = LauncherSettings.Favorites.CONTAINER_UNKNOWN,
 ) {
     fun newIcon(info: ItemInfoWithIcon): FastBitmapDrawable {
-        Log.d("TEST", "info.container=${info.container}, container=$container")
         if (info.container != container) {
             return info.newIcon(launcher)
         }

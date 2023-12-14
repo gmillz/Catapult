@@ -144,7 +144,6 @@ fun SelectIconScreen(
                                                 iconEntry.name,
                                                 iconEntry.type
                                             )
-                                            Log.d("TEST", "onClickItem - $iconPickerItem")
                                             scope.launch {
                                                 (context as Activity).let { activity ->
                                                     activity.setResult(
@@ -175,7 +174,6 @@ fun SelectIconScreen(
                         label = remember(iconPack) { iconPack.label },
                         icon = remember(iconPack) { iconPack.icon.toBitmap() },
                         onClick = {
-                            Log.d("TEST", "here")
                             navController.navigate("pick_icon/${iconPack.packPackageName}")
                         }
                     )

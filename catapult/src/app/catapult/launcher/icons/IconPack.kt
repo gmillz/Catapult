@@ -40,7 +40,6 @@ sealed class IconPack(
 
     fun loadBlocking() {
         waiter?.run {
-            Log.d("TEST", "loadBlocking - $packPackageName")
             acquireUninterruptibly()
             release()
         }
