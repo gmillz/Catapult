@@ -102,9 +102,9 @@ fun SmartspaceProviderSetting(
             ListEntry(
                 value = mode,
                 label = { stringResource(id = mode.nameResourceId) },
-                enabled = mode.isAvailable(context = context),
+                enabled = mode.isAvailable(context = context)
             )
-        }
+        }.filter { it.enabled }
     }
 
     ListSetting(

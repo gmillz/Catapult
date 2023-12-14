@@ -27,7 +27,9 @@ fun HomescreenScreen() {
         navController = LocalNavController.current,
         title = { Text(text = stringResource(id = R.string.homescreen_title)) }
     ) {
-        SettingGroup {
+        SettingGroup(
+            title = stringResource(id = R.string.general_title)
+        ) {
             val context = LocalContext.current
             val entries = arrayListOf<ListEntry<String>>()
             FeedBridge.INSTANCE.get(context).bridgePackages.forEach {
@@ -46,6 +48,13 @@ fun HomescreenScreen() {
                     ))
                 }
             }
+
+            SettingSwitch(
+                controller = settings.addIconToHome.getController(),
+                label = stringResource(id = R.string.auto_add_shortcuts_label),
+                description = stringResource(id = R.string.auto_add_shortcuts_description)
+            )
+
             ListSetting(
                 controller = settings.feedProvider.getController(),
                 entries = entries,

@@ -41,6 +41,11 @@ class Settings(context: Context): BaseSettings(context) {
         onSet = { recreate() }
     )
 
+    val addIconToHome = setting(
+        key = booleanPreferencesKey("add_icon_to_home"),
+        defaultValue = false
+    )
+
     val iconPack = setting(
         key = stringPreferencesKey("icon_pack"),
         defaultValue = "",

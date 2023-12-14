@@ -32,6 +32,8 @@ import com.android.launcher3.model.ItemInstallQueue;
 import com.android.launcher3.pm.InstallSessionHelper;
 import com.android.launcher3.util.Executors;
 
+import app.catapult.launcher.settings.Settings;
+
 /**
  * BroadcastReceiver to handle session commit intent.
  */
@@ -39,11 +41,11 @@ public class SessionCommitReceiver extends BroadcastReceiver {
 
     private static final String LOG = "SessionCommitReceiver";
 
-    // Preference key for automatically adding icon to homescreen.
-    public static final String ADD_ICON_PREFERENCE_KEY = "pref_add_icon_to_home";
-
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (!PackageInstaller.ACTION_SESSION_COMMITTED.equals(intent.getAction())) {
+            return;
+        }
         Executors.MODEL_EXECUTOR.execute(() -> processIntent(context, intent));
     }
 
@@ -80,6 +82,6 @@ public class SessionCommitReceiver extends BroadcastReceiver {
     }
 
     public static boolean isEnabled(Context context) {
-        return LauncherPrefs.getPrefs(context).getBoolean(ADD_ICON_PREFERENCE_KEY, true);
+        return Settings.getInstance(context).getAddIconToHome().firstBlocking();
     }
 }
