@@ -28,7 +28,11 @@ import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import app.catapult.extensions.ViewKt;
 import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.CatapultLauncher;
+import app.catapult.launcher.settings.Settings;
+import app.catapult.launcher.util.FlowCollector;
 
 /**
  * View class that represents the bottom row of the home screen.
@@ -78,9 +82,11 @@ public class Hotseat extends CellLayout implements Insettable {
     }
 
     public void resetLayout(boolean hasVerticalHotseat) {
+        android.util.Log.d("TEST-Hotseat", "resetLayout - " + mActivity.getClass().getName());
         removeAllViewsInLayout();
         mHasVerticalHotseat = hasVerticalHotseat;
         DeviceProfile dp = mActivity.getDeviceProfile();
+        android.util.Log.d("TEST-Hotseat", "hotseat icons - " + dp.numShownHotseatIcons);
         resetCellSize(dp);
         int rows = CatapultAppKt.getSettings().getTwoRowDockEnabled().firstBlocking()? 2 : 1;
         if (hasVerticalHotseat) {

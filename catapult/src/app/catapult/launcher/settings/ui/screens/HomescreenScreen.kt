@@ -11,15 +11,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.catapult.launcher.feed.FeedBridge
 import app.catapult.launcher.settings
+import app.catapult.launcher.settings.Routes
 import com.android.launcher3.R
 import com.gmillz.compose.settings.getController
+import com.gmillz.compose.settings.ui.SettingsScreen
 import com.gmillz.compose.settings.ui.components.ListEntry
 import com.gmillz.compose.settings.ui.components.ListSetting
 import com.gmillz.compose.settings.ui.components.SettingGroup
 import com.gmillz.compose.settings.ui.components.SettingSwitch
+import com.gmillz.compose.settings.ui.components.SettingTemplate
 import com.gmillz.compose.settings.ui.components.SettingsPage
 import com.gmillz.compose.settings.util.LocalNavController
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+
+val homescreenScreens = listOf(
+    SettingsScreen(Routes.HOME_SCREEN_GRID) {
+        HomescreenGridSettings()
+    }
+)
 
 @Composable
 fun HomescreenScreen() {
@@ -27,6 +36,7 @@ fun HomescreenScreen() {
         navController = LocalNavController.current,
         title = { Text(text = stringResource(id = R.string.homescreen_title)) }
     ) {
+        val navController = LocalNavController.current
         SettingGroup(
             title = stringResource(id = R.string.general_title)
         ) {
@@ -68,6 +78,17 @@ fun HomescreenScreen() {
             SettingSwitch(
                 controller = settings.showTopShadow.getController(),
                 label = stringResource(id = R.string.show_top_shadow_title)
+            )
+        }
+
+        SettingGroup(
+            title = stringResource(id = R.string.layout_title)
+        ) {
+            SettingTemplate(
+                title = stringResource(id = R.string.home_screen_grid),
+                onClick = {
+                    navController.navigate(Routes.HOME_SCREEN_GRID)
+                }
             )
         }
         

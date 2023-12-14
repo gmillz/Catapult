@@ -74,6 +74,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.DeviceProfileOverrides;
 import app.catapult.launcher.settings.Settings;
 
 public class InvariantDeviceProfile {
@@ -130,7 +131,7 @@ public class InvariantDeviceProfile {
     public float[] iconTextSize;
     public int iconBitmapSize;
     public int fillResIconDpi;
-    public @DeviceType int deviceType;
+    public static @DeviceType int deviceType;
 
     public PointF[] minCellSize;
 
@@ -225,7 +226,12 @@ public class InvariantDeviceProfile {
      * This constructor should NOT have any monitors by design.
      */
     public InvariantDeviceProfile(Context context, String gridName) {
-        String newName = initGrid(context, gridName);
+        this(context, DeviceProfileOverrides.INSTANCE.get(context).getGridInfo(gridName));
+    }
+
+    public InvariantDeviceProfile(Context context, DeviceProfileOverrides.DbGridInfo dbGridInfo) {
+        String gridName = DeviceProfileOverrides.INSTANCE.get(context).getGridName(dbGridInfo);
+        String newName = initGrid(context, gridName, dbGridInfo);
         if (newName == null || !newName.equals(gridName)) {
             throw new IllegalArgumentException("Unknown grid name");
         }
@@ -325,6 +331,12 @@ public class InvariantDeviceProfile {
     }
 
     private String initGrid(Context context, String gridName) {
+        DeviceProfileOverrides.DbGridInfo dbGridInfo = DeviceProfileOverrides.INSTANCE.get(context)
+                .getGridInfo();
+        return initGrid(context, gridName, dbGridInfo);
+    }
+
+    private String initGrid(Context context, String gridName, DeviceProfileOverrides.DbGridInfo dbGridInfo) {
         Info displayInfo = DisplayController.INSTANCE.get(context).getInfo();
         @DeviceType int deviceType = getDeviceType(displayInfo);
 
@@ -333,7 +345,7 @@ public class InvariantDeviceProfile {
                         RestoreDbTask.isPending(context));
         DisplayOption displayOption =
                 invDistWeightedInterpolate(displayInfo, allOptions, deviceType);
-        initGrid(context, displayInfo, displayOption, deviceType);
+        initGrid(context, displayInfo, displayOption, deviceType, dbGridInfo);
         return displayOption.grid.name;
     }
 
@@ -343,13 +355,23 @@ public class InvariantDeviceProfile {
     }
 
     private void initGrid(Context context, Info displayInfo, DisplayOption displayOption,
-            @DeviceType int deviceType) {
+                          @DeviceType int deviceType) {
+        DeviceProfileOverrides.DbGridInfo dbGridInfo = DeviceProfileOverrides.INSTANCE.get(context)
+                .getGridInfo();
+        initGrid(context, displayInfo, displayOption, deviceType, dbGridInfo);
+    }
+
+    private void initGrid(Context context, Info displayInfo, DisplayOption displayOption,
+            @DeviceType int deviceType, DeviceProfileOverrides.DbGridInfo dbGridInfo) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
-        numRows = closestProfile.numRows;
-        numColumns = closestProfile.numColumns;
-        numSearchContainerColumns = closestProfile.numSearchContainerColumns;
-        dbFile = closestProfile.dbFile;
+        if (DeviceProfileOverrides.INSTANCE.get(context).setDefaultsIfNeeded(closestProfile)) {
+            dbGridInfo = DeviceProfileOverrides.INSTANCE.get(context).getGridInfo();
+        }
+        numRows = dbGridInfo.getNumRows();
+        numColumns = dbGridInfo.getNumColumns();
+        numSearchContainerColumns = dbGridInfo.getNumHotseatColumns();
+        dbFile = dbGridInfo.getDbFile();
         defaultLayoutId = closestProfile.defaultLayoutId;
         demoModeLayoutId = closestProfile.demoModeLayoutId;
 
@@ -382,9 +404,9 @@ public class InvariantDeviceProfile {
 
         horizontalMargin = displayOption.horizontalMargin;
 
-        numShownHotseatIcons = closestProfile.numHotseatIcons;
+        numShownHotseatIcons = numSearchContainerColumns;
         numDatabaseHotseatIcons = deviceType == TYPE_MULTI_DISPLAY
-                ? closestProfile.numDatabaseHotseatIcons : closestProfile.numHotseatIcons;
+                ? closestProfile.numDatabaseHotseatIcons : numSearchContainerColumns;
         hotseatColumnSpan = closestProfile.hotseatColumnSpan;
         hotseatBarBottomSpace = displayOption.hotseatBarBottomSpace;
         hotseatQsbSpace = displayOption.hotseatQsbSpace;
@@ -543,7 +565,7 @@ public class InvariantDeviceProfile {
     /**
      * @return all the grid options that can be shown on the device
      */
-    public List<GridOption> parseAllGridOptions(Context context) {
+    public static List<GridOption> parseAllGridOptions(Context context) {
         return parseAllDefinedGridOptions(context)
                 .stream()
                 .filter(go -> go.isEnabled(deviceType))
@@ -792,7 +814,7 @@ public class InvariantDeviceProfile {
         private final @StyleRes int allAppsStyle;
         private final int numAllAppsColumns;
         private final int numDatabaseAllAppsColumns;
-        private final int numHotseatIcons;
+        public final int numHotseatIcons;
         private final int numDatabaseHotseatIcons;
 
         private final int[] hotseatColumnSpan = new int[COUNT_SIZES];

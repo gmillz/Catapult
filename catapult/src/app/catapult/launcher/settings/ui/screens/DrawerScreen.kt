@@ -22,7 +22,7 @@ fun DrawerScreen() {
         ) {
             SliderSetting(
                 label = stringResource(id = R.string.background_opacity),
-                value = settings.drawerOpacity.getController(),
+                controller = settings.drawerOpacity.getController(),
                 step = 0.1f,
                 valueRange = 0f..1f,
                 showAsPercentage = true,

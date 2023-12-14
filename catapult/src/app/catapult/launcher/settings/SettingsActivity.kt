@@ -90,4 +90,6 @@ object Routes {
     const val GENERAL = "general"
     const val CUSTOM_ICON_SHAPE_CREATOR = "custom_icon_shape_creator"
     const val ICON_SHAPE = "icon_shape"
+    const val HOME_SCREEN = "home_screen"
+    const val HOME_SCREEN_GRID = "home_screen_grid"
 }

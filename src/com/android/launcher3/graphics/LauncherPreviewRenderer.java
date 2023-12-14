@@ -119,7 +119,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import app.catapult.launcher.CatapultAppKt;
 import app.catapult.launcher.CatapultAppWidgetHostView;
+import app.catapult.launcher.data.AppDatabase;
+import app.catapult.launcher.data.AppDatabase_Impl;
+import app.catapult.launcher.data.overrides.ItemOverrideRepository;
 import app.catapult.launcher.icons.AdaptiveIconDrawableCompat;
+import app.catapult.launcher.icons.IconPackProvider;
 import app.catapult.launcher.smartspace.provider.SmartspaceProvider;
 
 /**
@@ -150,6 +154,9 @@ public class LauncherPreviewRenderer extends ContextWrapper
                     CustomWidgetManager.INSTANCE, PluginManagerWrapper.INSTANCE,
                     WindowManagerProxy.INSTANCE, DisplayController.INSTANCE);
             mIdp = idp;
+            putBaseInstance(AppDatabase.INSTANCE);
+            putBaseInstance(IconPackProvider.INSTANCE);
+            putBaseInstance(ItemOverrideRepository.INSTANCE);
             putBaseInstance(SmartspaceProvider.INSTANCE);
             mObjectMap.put(InvariantDeviceProfile.INSTANCE, idp);
             mObjectMap.put(LauncherAppState.INSTANCE,

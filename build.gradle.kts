@@ -128,7 +128,7 @@ dependencies {
     implementation(project(":SystemUIPluginCore"))
     implementation(project(":extensions"))
 
-    implementation("com.github.gmillz:ComposeSettings:1.1.2")
+    implementation("com.github.gmillz:ComposeSettings:1.2.1")
 
     implementation("com.google.protobuf:protobuf-javalite:3.21.12")
     implementation("me.xdrop:fuzzywuzzy:1.4.0")

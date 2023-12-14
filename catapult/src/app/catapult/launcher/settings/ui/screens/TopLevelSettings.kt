@@ -21,7 +21,11 @@ val topLevelScreens = listOf(
     ) {
         GeneralScreen()
     },
-    SettingsScreen("homescreen", R.string.homescreen_title) {
+    SettingsScreen(
+        route = Routes.HOME_SCREEN,
+        labelRes = R.string.homescreen_title,
+        screens = homescreenScreens
+    ) {
         HomescreenScreen()
     },
     SettingsScreen("dock", R.string.dock_title) {

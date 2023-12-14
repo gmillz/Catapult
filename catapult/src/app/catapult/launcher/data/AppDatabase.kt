@@ -15,6 +15,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun itemOverrideDao(): ItemOverrideDao
 
     companion object {
+        @JvmField
         val INSTANCE = MainThreadInitializedObject { context ->
             Room.databaseBuilder(
                 context,

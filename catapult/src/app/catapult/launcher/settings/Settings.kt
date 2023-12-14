@@ -1,6 +1,10 @@
 package app.catapult.launcher.settings
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import com.android.launcher3.LauncherAppState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -8,6 +12,7 @@ import kotlinx.coroutines.flow.onEach
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import app.catapult.launcher.icons.AdaptiveIconDrawableCompat
 import app.catapult.launcher.icons.shape.IconShape
@@ -20,6 +25,7 @@ import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.graphics.IconShape as L3IconShape
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.gmillz.compose.settings.BaseSettings
+import com.gmillz.compose.settings.SettingController
 
 class Settings(context: Context): BaseSettings(context) {
 
@@ -160,6 +166,21 @@ class Settings(context: Context): BaseSettings(context) {
         onSet = { recreate() }
     )
 
+    val hotseatColumns = setting(
+        key = intPreferencesKey("hotseat_columns"),
+        defaultValue = -1,
+    )
+
+    val workspaceRows = setting(
+        key = intPreferencesKey("workspace_rows"),
+        defaultValue = -1,
+    )
+
+    val workspaceColumns = setting(
+        key = intPreferencesKey("workspace_columns"),
+        defaultValue = -1,
+    )
+
     init {
         initializeIconShape(iconShape.firstBlocking())
         iconShape.get()
@@ -184,4 +205,19 @@ class Settings(context: Context): BaseSettings(context) {
         @JvmStatic
         fun getInstance(context: Context): Settings = INSTANCE.get(context)
     }
+}
+
+private class MutableStateSettingController<T>(
+    private val mutableState: MutableState<T>
+): SettingController<T> {
+    override val state = mutableState
+
+    override fun onChange(newValue: T) {
+        mutableState.value = newValue
+    }
+}
+
+@Composable
+fun <T> MutableState<T>.asSettingController(): SettingController<T> {
+    return remember(this) { MutableStateSettingController(this) }
 }
