@@ -7,6 +7,7 @@ import app.catapult.launcher.settings
 import com.android.launcher3.R
 import com.gmillz.compose.settings.getController
 import com.gmillz.compose.settings.ui.components.SettingGroup
+import com.gmillz.compose.settings.ui.components.SettingSwitch
 import com.gmillz.compose.settings.ui.components.SettingsPage
 import com.gmillz.compose.settings.ui.components.SliderSetting
 import com.gmillz.compose.settings.util.LocalNavController
@@ -26,6 +27,15 @@ fun DrawerScreen() {
                 step = 0.1f,
                 valueRange = 0f..1f,
                 showAsPercentage = true,
+            )
+        }
+
+        SettingGroup(
+            title = stringResource(id = R.string.icons_title)
+        ) {
+            SettingSwitch(
+                controller = settings.showIconLabelsInDrawer.getController(),
+                label = stringResource(id = R.string.show_labels_title)
             )
         }
     }

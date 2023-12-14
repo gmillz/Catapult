@@ -4,6 +4,7 @@ import android.content.Context
 import com.android.launcher3.DeviceProfile
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.InvariantDeviceProfile.GridOption
+import com.android.launcher3.Utilities
 import com.android.launcher3.util.MainThreadInitializedObject
 import kotlin.time.times
 
@@ -54,7 +55,15 @@ class DeviceProfileOverrides(context: Context) {
         val enableIconText = settings.showIconLabelsOnHomescreen.firstBlocking()
         val iconTextSizeFactor = if (enableIconText) 1f else 0f
 
+        val enableDrawerIconText = settings.showIconLabelsInDrawer.firstBlocking()
+        val drawerIconTextSizeFactor = if (enableDrawerIconText) 1f else 0f
+
         dp.iconTextSizePx = (iconTextSizeFactor * dp.iconTextSizePx).toInt()
+        val allAppsIconTextSizePx = dp.allAppsIconTextSizePx
+        dp.allAppsIconTextSizePx *= drawerIconTextSizeFactor
+        if (!enableDrawerIconText) {
+            dp.allAppsCellHeightPx -= allAppsIconTextSizePx.toInt()
+        }
     }
 
     data class DbGridInfo(

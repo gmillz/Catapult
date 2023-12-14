@@ -187,6 +187,12 @@ class Settings(context: Context): BaseSettings(context) {
         onSet = { reloadIdp() }
     )
 
+    val showIconLabelsInDrawer = setting(
+        key = booleanPreferencesKey("show_icon_labels_in_drawer"),
+        defaultValue = true,
+        onSet = { reloadIdp() }
+    )
+
     init {
         initializeIconShape(iconShape.firstBlocking())
         iconShape.get()
