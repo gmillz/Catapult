@@ -33,6 +33,13 @@ fun DrawerScreen() {
         SettingGroup(
             title = stringResource(id = R.string.icons_title)
         ) {
+            SliderSetting(
+                label = stringResource(id = R.string.icon_size_title),
+                controller = settings.iconSizeFactorDrawer.getController(),
+                valueRange = 0.5f..1.5f,
+                step = 0.1f,
+                showAsPercentage = true
+            )
             SettingSwitch(
                 controller = settings.showIconLabelsInDrawer.getController(),
                 label = stringResource(id = R.string.show_labels_title)

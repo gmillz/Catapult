@@ -76,6 +76,12 @@ class DeviceProfileOverrides(context: Context) {
         idp.iconSize[INDEX_LANDSCAPE] *= iconSizeFactor
         idp.iconSize[INDEX_TWO_PANEL_PORTRAIT] *= iconSizeFactor
         idp.iconSize[INDEX_TWO_PANEL_LANDSCAPE] *= iconSizeFactor
+
+        val allAppsIconSizeFactor = settings.iconSizeFactorDrawer.firstBlocking()
+        idp.allAppsIconSize[INDEX_DEFAULT] *= allAppsIconSizeFactor
+        idp.allAppsIconSize[INDEX_LANDSCAPE] *= allAppsIconSizeFactor
+        idp.allAppsIconSize[INDEX_TWO_PANEL_PORTRAIT] *= allAppsIconSizeFactor
+        idp.allAppsIconSize[INDEX_TWO_PANEL_LANDSCAPE] *= allAppsIconSizeFactor
     }
 
     data class DbGridInfo(
