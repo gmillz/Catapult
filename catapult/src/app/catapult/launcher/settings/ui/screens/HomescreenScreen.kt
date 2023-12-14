@@ -21,6 +21,7 @@ import com.gmillz.compose.settings.ui.components.SettingGroup
 import com.gmillz.compose.settings.ui.components.SettingSwitch
 import com.gmillz.compose.settings.ui.components.SettingTemplate
 import com.gmillz.compose.settings.ui.components.SettingsPage
+import com.gmillz.compose.settings.ui.components.SliderSetting
 import com.gmillz.compose.settings.util.LocalNavController
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
@@ -95,6 +96,13 @@ fun HomescreenScreen() {
         SettingGroup(
             title = stringResource(id = R.string.icons_title)
         ) {
+            SliderSetting(
+                label = stringResource(id = R.string.icon_size_title),
+                controller = settings.iconSizeFactorHomescreen.getController(),
+                valueRange = 0.5f..1.5f,
+                step = 0.1f,
+                showAsPercentage = true
+            )
             SettingSwitch(
                 controller = settings.showIconLabelsOnHomescreen.getController(),
                 label = stringResource(id = R.string.show_labels_title)

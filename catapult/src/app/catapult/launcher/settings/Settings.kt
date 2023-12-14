@@ -193,6 +193,12 @@ class Settings(context: Context): BaseSettings(context) {
         onSet = { reloadIdp() }
     )
 
+    val iconSizeFactorHomescreen = setting(
+        key = floatPreferencesKey("homescreen_icon_size_factory"),
+        defaultValue = 1.0f,
+        onSet = { reloadIdp() }
+    )
+
     init {
         initializeIconShape(iconShape.firstBlocking())
         iconShape.get()

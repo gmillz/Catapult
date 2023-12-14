@@ -4,6 +4,10 @@ import android.content.Context
 import com.android.launcher3.DeviceProfile
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.InvariantDeviceProfile.GridOption
+import com.android.launcher3.InvariantDeviceProfile.INDEX_DEFAULT
+import com.android.launcher3.InvariantDeviceProfile.INDEX_LANDSCAPE
+import com.android.launcher3.InvariantDeviceProfile.INDEX_TWO_PANEL_LANDSCAPE
+import com.android.launcher3.InvariantDeviceProfile.INDEX_TWO_PANEL_PORTRAIT
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.MainThreadInitializedObject
 import kotlin.time.times
@@ -64,6 +68,14 @@ class DeviceProfileOverrides(context: Context) {
         if (!enableDrawerIconText) {
             dp.allAppsCellHeightPx -= allAppsIconTextSizePx.toInt()
         }
+    }
+
+    fun applyInvariantDeviceProfileOverrides(idp: InvariantDeviceProfile) {
+        val iconSizeFactor = settings.iconSizeFactorHomescreen.firstBlocking()
+        idp.iconSize[INDEX_DEFAULT] *= iconSizeFactor
+        idp.iconSize[INDEX_LANDSCAPE] *= iconSizeFactor
+        idp.iconSize[INDEX_TWO_PANEL_PORTRAIT] *= iconSizeFactor
+        idp.iconSize[INDEX_TWO_PANEL_LANDSCAPE] *= iconSizeFactor
     }
 
     data class DbGridInfo(
