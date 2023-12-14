@@ -15,14 +15,14 @@ sealed class SmartspaceMode(
         fun fromString(value: String): SmartspaceMode = when (value) {
             "google" -> GoogleSmartspace
             "google_search" -> GoogleSearchSmartspace
-            else -> LawnchairSmartspace
+            else -> CatapultSmartspace
         }
 
         /**
          * @return The list of all time format options.
          */
         fun values() = listOf(
-            LawnchairSmartspace,
+            CatapultSmartspace,
             GoogleSmartspace,
             GoogleSearchSmartspace,
         )
@@ -32,11 +32,11 @@ sealed class SmartspaceMode(
 }
 
 
-object LawnchairSmartspace : SmartspaceMode(
-    nameResourceId = R.string.smartspace_mode_lawnchair,
+object CatapultSmartspace : SmartspaceMode(
+    nameResourceId = R.string.smartspace_mode_catapult,
     layoutResourceId = R.layout.smartspace_container,
 ) {
-    override fun toString() = "lawnchair"
+    override fun toString() = "catapult"
     override fun isAvailable(context: Context): Boolean = true
 }
 

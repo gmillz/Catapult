@@ -135,7 +135,7 @@ import java.util.stream.Collectors;
 
 import app.catapult.launcher.CatapultAppKt;
 import app.catapult.launcher.smartspace.SmartspaceAppWidgetProvider;
-import app.catapult.launcher.smartspace.model.LawnchairSmartspace;
+import app.catapult.launcher.smartspace.model.CatapultSmartspace;
 import app.catapult.launcher.smartspace.model.SmartspaceMode;
 
 /**
@@ -609,7 +609,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         if (mFirstPagePinnedItem == null) {
             SmartspaceMode smartspaceMode = CatapultAppKt.getSettings().getSmartspaceMode().firstBlocking();
             if (!smartspaceMode.isAvailable(mLauncher)) {
-                smartspaceMode = LawnchairSmartspace.INSTANCE;
+                smartspaceMode = CatapultSmartspace.INSTANCE;
                 CatapultAppKt.getSettings().getSmartspaceMode().set(smartspaceMode);
             }
             // In transposed layout, we add the first page pinned widget in the Grid.
