@@ -111,5 +111,7 @@
     <string name="rows">Rows</string>
     <string name="apply_grid">Apply</string>
     <string name="dock_icons_title">Dock Icons</string>
+    <string name="icons_title">Icons</string>
+    <string name="show_labels_title">Show Labels</string>
 
 </resources>

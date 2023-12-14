@@ -91,6 +91,15 @@ fun HomescreenScreen() {
                 }
             )
         }
+
+        SettingGroup(
+            title = stringResource(id = R.string.icons_title)
+        ) {
+            SettingSwitch(
+                controller = settings.showIconLabelsOnHomescreen.getController(),
+                label = stringResource(id = R.string.show_labels_title)
+            )
+        }
         
         SettingGroup(
             title = stringResource(id = R.string.widget_button_text)

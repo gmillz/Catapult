@@ -1,9 +1,11 @@
 package app.catapult.launcher
 
 import android.content.Context
+import com.android.launcher3.DeviceProfile
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.InvariantDeviceProfile.GridOption
 import com.android.launcher3.util.MainThreadInitializedObject
+import kotlin.time.times
 
 class DeviceProfileOverrides(context: Context) {
 
@@ -45,6 +47,14 @@ class DeviceProfileOverrides(context: Context) {
             res = true
         }
         return res
+    }
+
+    fun applyDeviceProfileIconOverrides(dp: DeviceProfile) {
+
+        val enableIconText = settings.showIconLabelsOnHomescreen.firstBlocking()
+        val iconTextSizeFactor = if (enableIconText) 1f else 0f
+
+        dp.iconTextSizePx = (iconTextSizeFactor * dp.iconTextSizePx).toInt()
     }
 
     data class DbGridInfo(

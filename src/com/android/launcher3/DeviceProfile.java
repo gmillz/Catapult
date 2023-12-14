@@ -66,6 +66,7 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.DeviceProfileOverrides;
 import app.catapult.launcher.settings.Settings;
 
 @SuppressLint("NewApi")
@@ -288,12 +289,16 @@ public class DeviceProfile {
     // DragController
     public int flingToDeleteThresholdVelocity;
 
+    private final DeviceProfileOverrides overrides;
+
     /** TODO: Once we fully migrate to staged split, remove "isMultiWindowMode" */
     DeviceProfile(Context context, InvariantDeviceProfile inv, Info info, WindowBounds windowBounds,
             SparseArray<DotRenderer> dotRendererCache, boolean isMultiWindowMode,
             boolean transposeLayoutWithOrientation, boolean isMultiDisplay, boolean isGestureMode,
             @NonNull final ViewScaleProvider viewScaleProvider,
             @NonNull final Consumer<DeviceProfile> dimensionOverrideProvider) {
+
+        overrides = DeviceProfileOverrides.INSTANCE.get(context);
 
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
@@ -1023,6 +1028,8 @@ public class DeviceProfile {
         } else {
             widgetPadding.setEmpty();
         }
+
+        overrides.applyDeviceProfileIconOverrides(this);
     }
 
     /**

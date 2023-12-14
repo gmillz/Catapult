@@ -181,6 +181,12 @@ class Settings(context: Context): BaseSettings(context) {
         defaultValue = -1,
     )
 
+    val showIconLabelsOnHomescreen = setting(
+        key = booleanPreferencesKey("show_icon_labels_on_home_screen"),
+        defaultValue = true,
+        onSet = { reloadIdp() }
+    )
+
     init {
         initializeIconShape(iconShape.firstBlocking())
         iconShape.get()
