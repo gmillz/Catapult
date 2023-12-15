@@ -114,5 +114,6 @@
     <string name="icons_title">Icons</string>
     <string name="show_labels_title">Show Labels</string>
     <string name="icon_size_title">Icon Size</string>
+    <string name="app_drawer_columns">App Drawer Columns</string>
 
 </resources>

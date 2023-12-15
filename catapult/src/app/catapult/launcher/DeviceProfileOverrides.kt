@@ -51,6 +51,9 @@ class DeviceProfileOverrides(context: Context) {
             settings.workspaceColumns.set(gridOption.numColumns)
             res = true
         }
+        if (settings.appDrawerColumns.firstBlocking() == -1) {
+            settings.appDrawerColumns.set(gridOption.numColumns)
+        }
         return res
     }
 
@@ -71,6 +74,9 @@ class DeviceProfileOverrides(context: Context) {
     }
 
     fun applyInvariantDeviceProfileOverrides(idp: InvariantDeviceProfile) {
+        idp.numAllAppsColumns = settings.appDrawerColumns.firstBlocking()
+        idp.numDatabaseAllAppsColumns = idp.numAllAppsColumns
+
         val iconSizeFactor = settings.iconSizeFactorHomescreen.firstBlocking()
         idp.iconSize[INDEX_DEFAULT] *= iconSizeFactor
         idp.iconSize[INDEX_LANDSCAPE] *= iconSizeFactor

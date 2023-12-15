@@ -205,6 +205,11 @@ class Settings(context: Context): BaseSettings(context) {
         onSet = { reloadIdp() }
     )
 
+    val appDrawerColumns = setting(
+        key = intPreferencesKey("drawer_columns"),
+        defaultValue = -1
+    )
+
     init {
         initializeIconShape(iconShape.firstBlocking())
         iconShape.get()
