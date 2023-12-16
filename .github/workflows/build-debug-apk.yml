@@ -3,11 +3,11 @@ name: Build debug APK
 on:
   workflow_dispatch:
   push:
-    branches: [ "13" ]
+    branches: [ "14" ]
     paths-ignore:
       - '.github/**'
   pull_request:
-    branches: [ "13" ]
+    branches: [ "14" ]
     paths-ignore:
       - '.github/**'
 
