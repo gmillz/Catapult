@@ -29,15 +29,7 @@ class DrawerFolder(
         return result
     }
 
-    fun asFolderInfo(): FolderInfo {
-        val folderInfo = FolderInfo()
-        folderInfo.title = title
-        for (item in content) {
-            val info = LauncherAppState.getInstanceNoCreate().model.getAppInfoForComponent(item)
-            if (info != null) {
-                folderInfo.add(WorkspaceItemInfo(info), false)
-            }
-        }
-        return folderInfo
+    fun asFolderInfo(): DrawerFolderInfo {
+        return DrawerFolderInfo(this)
     }
 }

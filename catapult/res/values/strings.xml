@@ -118,5 +118,14 @@
     <string name="categories">Categories</string>
     <string name="drawer_folders">Drawer Folders</string>
     <string name="folders">Folders</string>
+    <string name="save">Save</string>
+    <string name="default_drawer_folder_name">New Folder</string>
+    <string name="select_apps">Select Apps</string>
+    <string name="title">Title</string>
+
+    <plurals name="app_count">
+        <item quantity="one">%d App</item>
+        <item quantity="other">%d Apps</item>
+    </plurals>
 
 </resources>

@@ -1,7 +1,6 @@
 package app.catapult.launcher.settings.ui.screens
 
 import android.content.ComponentName
-import android.util.Log
 import android.widget.LinearLayout
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -32,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -42,10 +42,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.NavController
 import app.catapult.launcher.data.drawer.DrawerFolderRepository
 import app.catapult.launcher.launcher
 import app.catapult.launcher.model.DrawerFolder
@@ -53,11 +53,8 @@ import app.catapult.launcher.settings.ui.components.SelectAppsBottomSheet
 import com.android.launcher3.R
 import com.android.launcher3.folder.FolderIcon
 import com.gmillz.compose.settings.ui.components.AlertBottomSheetContent
-import com.gmillz.compose.settings.ui.components.BottomSheetHandler
 import com.gmillz.compose.settings.ui.components.SettingTemplate
 import com.gmillz.compose.settings.ui.components.SettingsPage
-import com.gmillz.compose.settings.ui.components.bottomSheetHandler
-import com.gmillz.compose.settings.util.LocalNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -69,16 +66,23 @@ fun DrawerFoldersScreen() {
     val context = LocalContext.current
     val scope = CoroutineScope(Job() + Dispatchers.IO)
     val folderBottomSheetState = rememberModalBottomSheetState()
+    val folderEditBottomSheetCurrentId = remember {
+        mutableIntStateOf(-1)
+    }
 
     SettingsPage(
         title = { Text(text = stringResource(R.string.drawer_folders)) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val folder = DrawerFolder(id = 0, title = "New Folder", listOf())
+                    val folder = DrawerFolder(
+                        id = 0,
+                        title = context.getString(R.string.default_drawer_folder_name),
+                        content = listOf()
+                    )
                     scope.launch {
                         val folderId = DrawerFolderRepository.INSTANCE.get(context).putFolder(folder)
-                        // TODO open new item
+                        folderEditBottomSheetCurrentId.intValue = folderId
                     }
                 }
             ) {
@@ -86,7 +90,7 @@ fun DrawerFoldersScreen() {
             }
         }
     ) {
-        DrawerFolders(folderBottomSheetState)
+        DrawerFolders(folderBottomSheetState, folderEditBottomSheetCurrentId)
     }
 }
 
@@ -95,21 +99,21 @@ fun DrawerFoldersScreen() {
 fun DrawerFolderItem(
     folder: DrawerFolder,
     bottomSheetState: SheetState,
+    folderEditBottomSheetCurrentId: MutableIntState,
     updateFolder: (DrawerFolder?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var showEditSheet by remember { mutableStateOf(false) }
 
 
-    if (showEditSheet) {
+    if (folderEditBottomSheetCurrentId.intValue == folder.id) {
         ModalBottomSheet(
-            onDismissRequest = { showEditSheet = false },
+            onDismissRequest = { folderEditBottomSheetCurrentId.intValue = -1 },
             sheetState = bottomSheetState,
             dragHandle = { BottomSheetDefaults.DragHandle() }
         ) {
             DrawerFolderEditorBottomSheet(folder) {
-                showEditSheet = false
+                folderEditBottomSheetCurrentId.intValue = -1
                 updateFolder(it)
             }
         }
@@ -118,11 +122,13 @@ fun DrawerFolderItem(
 
     SettingTemplate(
         title = folder.title,
-        description = "${folder.content.size} apps",
+        description = pluralStringResource(R.plurals.app_count,
+            folder.content.size, folder.content.size),
         startWidget = {
             AndroidView(
                 factory = {
-                    val icon = FolderIcon.inflateIcon(R.layout.folder_icon, launcher, LinearLayout(launcher, null), folder.asFolderInfo())
+                    val icon = FolderIcon.inflateIcon(R.layout.folder_icon,
+                        launcher, LinearLayout(launcher, null), folder.asFolderInfo())
                     icon.textVisible = false
                     icon
                 },
@@ -147,7 +153,7 @@ fun DrawerFolderItem(
         },
         onClick = {
             scope.launch {
-                showEditSheet = true
+                folderEditBottomSheetCurrentId.intValue = folder.id
                 bottomSheetState.show()
             }
         }
@@ -171,11 +177,10 @@ fun DrawerFolderEditorBottomSheet(
 
     if (showAppsBottomSheet) {
         SelectAppsBottomSheet(
-            title = "Select Apps",
+            title = stringResource(R.string.select_apps),
             sheetState = selectAppsBottomSheetState,
             currentSelectedApps = selectedApps,
             onDismissRequest = {
-                Log.d("TEST", "SelectApps onDismissRequest")
                 showAppsBottomSheet = false
                 scope.launch {
                     selectAppsBottomSheetState.hide()
@@ -212,7 +217,7 @@ fun DrawerFolderEditorBottomSheet(
                         .fillMaxWidth(),
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text(text = "Title") }
+                    label = { Text(text = stringResource(R.string.title)) }
                 )
             }
         },
@@ -229,13 +234,14 @@ fun DrawerFolderEditorBottomSheet(
                            },
                        headlineContent = {
                            Text(
-                               text = "Select apps",
+                               text = stringResource(R.string.select_apps),
                                style = MaterialTheme.typography.headlineMedium
                            )
                        },
                        supportingContent = {
                            Text(
-                               text = selectedApps.size.toString() + " Apps"
+                               text = pluralStringResource(R.plurals.app_count,
+                                   selectedApps.size, selectedApps.size)
                            )
                        },
                        leadingContent = {
@@ -268,7 +274,7 @@ fun DrawerFolderEditorBottomSheet(
                     onDismissRequest(newFolder)
                 }
             ) {
-                Text(text = stringResource(id = com.google.android.material.R.string.mtrl_picker_save))
+                Text(text = stringResource(id = R.string.save))
             }
         }
     )
@@ -276,7 +282,10 @@ fun DrawerFolderEditorBottomSheet(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawerFolders(bottomSheetState: SheetState) {
+fun DrawerFolders(
+    bottomSheetState: SheetState,
+    folderEditBottomSheetCurrentId: MutableIntState
+) {
 
     val folders = remember {
         mutableStateListOf<DrawerFolder>()
@@ -291,7 +300,7 @@ fun DrawerFolders(bottomSheetState: SheetState) {
     }
 
     for (folder in folders) {
-            DrawerFolderItem(folder, bottomSheetState) { drawerFolder ->
+            DrawerFolderItem(folder, bottomSheetState, folderEditBottomSheetCurrentId) { drawerFolder ->
                 if (drawerFolder == null) return@DrawerFolderItem
                 val index = folders.indexOfFirst { it.id == folder.id }
                 folders.removeAt(index)
