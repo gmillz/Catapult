@@ -49,5 +49,5 @@ jobs:
         with:
           name: Release APK
           path: |
-            build/outputs/apk/catapult/release/*.apk
+            build/outputs/apk/catapult/debug/*.apk
             
