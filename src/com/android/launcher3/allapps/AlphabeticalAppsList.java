@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.allapps;
 
+import android.content.ComponentName;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
 
@@ -257,6 +259,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                 position += mWorkProviderManager.addWorkItems(mAdapterItems);
                 addApps = mWorkProviderManager.shouldShowWorkApps();
             }
+            List<ComponentName> folderHiddenApps = getFolderHiddenApps();
             if (addApps) {
                 String lastSectionName = null;
                 for (FolderInfo info : mFolders) {
@@ -269,6 +272,9 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                     position++;
                 }
                 for (AppInfo info : mApps) {
+                    if (folderHiddenApps.contains(info.componentName)) {
+                        continue;
+                    }
                     mAdapterItems.add(AdapterItem.asApp(info));
 
                     String sectionName = info.sectionName;
@@ -312,6 +318,15 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             DiffUtil.calculateDiff(new MyDiffCallback(oldItems, mAdapterItems), false)
                     .dispatchUpdatesTo(mAdapter);
         }
+    }
+
+    private List<ComponentName> getFolderHiddenApps() {
+        return mFolders.stream()
+                .flatMap(folderInfo -> {
+                            return folderInfo.contents.stream();
+                }
+                ).map(WorkspaceItemInfo::getTargetComponent)
+                .collect(Collectors.toList());
     }
 
     private static class MyDiffCallback extends DiffUtil.Callback {

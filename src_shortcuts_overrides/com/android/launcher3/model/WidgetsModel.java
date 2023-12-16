@@ -52,6 +52,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import app.catapult.launcher.allapps.CatapultAppFilter;
 import app.catapult.launcher.smartspace.SmartspaceAppWidgetProvider;
 
 /**
@@ -271,7 +272,7 @@ public class WidgetsModel {
 
         WidgetValidityCheck(LauncherAppState app) {
             mIdp = app.getInvariantDeviceProfile();
-            mAppFilter = new AppFilter(app.getContext());
+            mAppFilter = new CatapultAppFilter(app.getContext());
         }
 
         @Override

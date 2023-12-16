@@ -58,6 +58,7 @@ import com.android.launcher3.util.SimpleBroadcastReceiver;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
 
+import app.catapult.launcher.allapps.CatapultAppFilter;
 import app.catapult.launcher.icons.CatapultIconProvider;
 
 public class LauncherAppState implements SafeCloseable {
@@ -158,7 +159,7 @@ public class LauncherAppState implements SafeCloseable {
         mIconProvider = new CatapultIconProvider(context);
         mIconCache = new IconCache(mContext, mInvariantDeviceProfile,
                 iconCacheFileName, mIconProvider);
-        mModel = new LauncherModel(context, this, mIconCache, new AppFilter(mContext),
+        mModel = new LauncherModel(context, this, mIconCache, new CatapultAppFilter(mContext),
                 iconCacheFileName != null);
         mOnTerminateCallback.add(mIconCache::close);
     }

@@ -11,7 +11,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.graphics.drawable.toBitmap
+import app.catapult.launcher.allapps.CatapultAppFilter
 import com.android.launcher3.AppFilter
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
@@ -22,7 +22,7 @@ import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 
 @Composable
 fun appsList(
-    filter: AppFilter = AppFilter(LocalContext.current),
+    filter: AppFilter = CatapultAppFilter(LocalContext.current),
     comparator: Comparator<App> = defaultComparator
 ): State<List<App>> {
     val context = LocalContext.current
@@ -38,6 +38,7 @@ fun appsList(
                 .sortedWith(comparator)
                 .toList()
         }
+
         onDispose {  }
     }
     return appsState

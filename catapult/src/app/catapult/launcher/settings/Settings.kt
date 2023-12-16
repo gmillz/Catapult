@@ -50,36 +50,6 @@ class Settings(context: Context): BaseSettings(context) {
     val drawerFolders: LiveData<List<FolderInfo>>
         get() = _drawerFolders
 
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            val model = LauncherAppState.getInstance(context).model
-            mainScope.launch {
-                model.addCallbacksAndLoad(object : Callbacks {
-                    override fun bindAllApplications(
-                        apps: Array<out AppInfo>?,
-                        flags: Int,
-                        packageUserKeytoUidMap: MutableMap<PackageUserKey, Int>?
-                    ) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            DrawerFolderRepository.INSTANCE.get(context)
-                                .getFolders().collect { folders ->
-                                    val dfs = arrayListOf<FolderInfo>()
-                                    folders.forEach {
-                                        dfs.add(it.asFolderInfo())
-                                    }
-                                    mainScope.launch {
-                                        _drawerFolders.postValue(dfs)
-                                    }
-                                }
-                        }
-                    }
-                })
-            }
-
-        }
-
-    }
-
     val dockSearchBarEnabled = setting(
         key = booleanPreferencesKey("dock_search_bar_enabled"),
         defaultValue = true,
@@ -265,6 +235,32 @@ class Settings(context: Context): BaseSettings(context) {
                 L3IconShape.init(context)
                 LauncherAppState.getInstance(context).reloadIcons()
             }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val model = LauncherAppState.getInstance(context).model
+            mainScope.launch {
+                model.addCallbacksAndLoad(object : Callbacks {
+                    override fun bindAllApplications(
+                        apps: Array<out AppInfo>?,
+                        flags: Int,
+                        packageUserKeytoUidMap: MutableMap<PackageUserKey, Int>?
+                    ) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            DrawerFolderRepository.INSTANCE.get(context)
+                                .getFolders().collect { folders ->
+                                    val dfs = arrayListOf<FolderInfo>()
+                                    folders.forEach {
+                                        dfs.add(it.asFolderInfo())
+                                    }
+                                    mainScope.launch {
+                                        _drawerFolders.postValue(dfs)
+                                    }
+                                }
+                        }
+                    }
+                })
+            }
+        }
     }
 
     private fun initializeIconShape(shape: IconShape) {

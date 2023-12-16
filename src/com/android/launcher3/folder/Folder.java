@@ -349,8 +349,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
 
             // We do not want to get events for the item being removed, as they will get handled
             // when the drop completes
-            try (SuppressInfoChanges s = new SuppressInfoChanges()) {
-                mInfo.remove((WorkspaceItemInfo) dragObject.dragInfo, true);
+            if (!isInAppDrawer()) {
+                try (SuppressInfoChanges s = new SuppressInfoChanges()) {
+                    mInfo.remove((WorkspaceItemInfo) dragObject.dragInfo, true);
+                }
             }
         }
         mDragInProgress = true;
@@ -987,6 +989,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     };
 
     public void completeDragExit() {
+        if (isInAppDrawer()) {
+            mLauncherDelegate.getLauncher().getAppsView().getActiveRecyclerView().getApps().updateAdapterItems();
+            return;
+        }
         if (mIsOpen) {
             close(true);
             mRearrangeOnClose = true;
@@ -1035,6 +1041,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     @Override
     public void onDropCompleted(final View target, final DragObject d,
             final boolean success) {
+        if (isInAppDrawer()) return;
         if (success) {
             if (mDeleteFolderOnDropCompleted && !mItemAddedBackToSelfViaIcon && target != this) {
                 replaceFolderWithFinalItem();
@@ -1398,6 +1405,9 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
 
     @Override
     public void onRemove(List<WorkspaceItemInfo> items) {
+        if (isInAppDrawer()) {
+            return;
+        }
         mItemsInvalidated = true;
         items.stream().map(this::getViewForInfo).forEach(mContent::removeItem);
         if (mState == STATE_ANIMATING) {
