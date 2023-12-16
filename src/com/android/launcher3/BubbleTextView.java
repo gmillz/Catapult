@@ -103,6 +103,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     protected static final int DISPLAY_TASKBAR = 5;
     private static final int DISPLAY_SEARCH_RESULT = 6;
     private static final int DISPLAY_SEARCH_RESULT_SMALL = 7;
+    private static final int DISPLAY_DRAWER_FOLDER = 8;
 
     private static final float MIN_LETTER_SPACING = -0.05f;
     private static final int MAX_SEARCH_LOOP_COUNT = 20;
@@ -223,6 +224,10 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.folderChildTextSizePx);
             setCompoundDrawablePadding(grid.folderChildDrawablePaddingPx);
             defaultIconSize = grid.folderChildIconSizePx;
+        } else if (mDisplay == DISPLAY_DRAWER_FOLDER) {
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.allAppsIconTextSizePx);
+            setCompoundDrawablePadding(grid.allAppsIconDrawablePaddingPx);
+            defaultIconSize = grid.allAppsIconSizePx;
         } else if (mDisplay == DISPLAY_SEARCH_RESULT) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.allAppsIconTextSizePx);
             defaultIconSize = getResources().getDimensionPixelSize(R.dimen.search_row_icon_size);

@@ -1,8 +1,11 @@
 package app.catapult.launcher.data
 
+import android.content.ComponentName
 import androidx.room.TypeConverter
 import app.catapult.launcher.icons.IconPickerItem
 import com.android.launcher3.util.ComponentKey
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 object Converters {
 
@@ -27,4 +30,15 @@ object Converters {
     @TypeConverter
     fun stringToComponentKeyList(string: String): List<ComponentKey?> =
         string.split("|||").map { ComponentKey.fromString(it) }
+
+    @TypeConverter
+    fun componentNameListToString(list: List<ComponentName>): String = Gson().toJson(list.distinct().map { it.flattenToString() })
+
+    @TypeConverter
+    fun stringToComponentNameList(data: String?): List<ComponentName> {
+        if (data == null || data == "") return listOf()
+
+        val listType = object: TypeToken<List<String>>() {}.type
+        return Gson().fromJson<List<String>>(data, listType).map { ComponentName.unflattenFromString(it)!! }.distinct()
+    }
 }

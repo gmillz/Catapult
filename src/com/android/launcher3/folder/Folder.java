@@ -339,6 +339,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             return;
         }
 
+        if (isInAppDrawer()) {
+            close(true);
+        }
+
         mContent.removeItem(mCurrentDragView);
         if (dragObject.dragInfo instanceof WorkspaceItemInfo) {
             mItemsInvalidated = true;
@@ -509,9 +513,14 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             mFolderName.setText("");
             mFolderName.setHint(R.string.folder_hint_text);
         }
+
+        if (isInAppDrawer()) {
+            mFolderName.setEnabled(false);
+        }
+
         // In case any children didn't come across during loading, clean up the folder accordingly
         mFolderIcon.post(() -> {
-            if (getItemCount() <= 1) {
+            if (getItemCount() <= 1 && !isInAppDrawer()) {
                 replaceFolderWithFinalItem();
             }
         });
@@ -862,7 +871,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             mRearrangeOnClose = false;
         }
         if (getItemCount() <= 1) {
-            if (!mDragInProgress && !mSuppressFolderDeletion) {
+            if (!mDragInProgress && !mSuppressFolderDeletion && !isInAppDrawer()) {
                 replaceFolderWithFinalItem();
             } else if (mDragInProgress) {
                 mDeleteFolderOnDropCompleted = true;
@@ -1668,6 +1677,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
 
     public void setOnFolderStateChangedListener(@Nullable OnFolderStateChangedListener listener) {
         mOnFolderStateChangedListener = listener;
+    }
+
+    public boolean isInAppDrawer() {
+        return mInfo.container == ItemInfo.NO_ID;
     }
 
     /** Listener that can be registered via {@link Folder#setOnFolderStateChangedListener} */

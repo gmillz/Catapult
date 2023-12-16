@@ -9,6 +9,11 @@ plugins {
     id("com.android.library") version "8.2.0" apply false
     id("com.google.devtools.ksp") version "1.9.21-1.0.16"
     kotlin("plugin.parcelize").version("1.9.20")
+    id("androidx.room").version("2.6.1")
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {

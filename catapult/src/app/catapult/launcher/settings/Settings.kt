@@ -1,6 +1,8 @@
 package app.catapult.launcher.settings
 
 import android.content.Context
+import android.content.pm.LauncherApps
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -14,6 +16,9 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import app.catapult.launcher.data.drawer.DrawerFolderRepository
 import app.catapult.launcher.icons.AdaptiveIconDrawableCompat
 import app.catapult.launcher.icons.shape.IconShape
 import app.catapult.launcher.icons.shape.IconShapeManager
@@ -22,10 +27,19 @@ import app.catapult.launcher.smartspace.model.SmartspaceCalendar
 import app.catapult.launcher.smartspace.model.SmartspaceMode
 import app.catapult.launcher.smartspace.model.SmartspaceTimeFormat
 import com.android.launcher3.InvariantDeviceProfile
+import com.android.launcher3.model.BgDataModel.Callbacks
+import com.android.launcher3.model.data.AppInfo
+import com.android.launcher3.model.data.FolderInfo
+import com.android.launcher3.model.data.WorkspaceItemInfo
+import com.android.launcher3.pm.UserCache
 import com.android.launcher3.graphics.IconShape as L3IconShape
 import com.android.launcher3.util.MainThreadInitializedObject
+import com.android.launcher3.util.PackageUserKey
 import com.gmillz.compose.settings.BaseSettings
 import com.gmillz.compose.settings.SettingController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class Settings(context: Context): BaseSettings(context) {
 
@@ -33,6 +47,65 @@ class Settings(context: Context): BaseSettings(context) {
     private val reloadIdp = {
         val idp = InvariantDeviceProfile.INSTANCE.get(context)
         idp.onSettingsChanged(context)
+    }
+
+    val mainScope = CoroutineScope(Dispatchers.Main)
+
+    private val _drawerFolders = MutableLiveData<List<FolderInfo>>(arrayListOf())
+    val drawerFolders: LiveData<List<FolderInfo>>
+        get() = _drawerFolders
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            val model = LauncherAppState.getInstance(context).model
+            mainScope.launch {
+                model.addCallbacksAndLoad(object : Callbacks {
+                    override fun bindAllApplications(
+                        apps: Array<out AppInfo>?,
+                        flags: Int,
+                        packageUserKeytoUidMap: MutableMap<PackageUserKey, Int>?
+                    ) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            DrawerFolderRepository.INSTANCE.get(context)
+                                .getFolders().collect { folders ->
+                                    if (folders == null) {
+                                        mainScope.launch {
+                                            Log.d("TEST", "here")
+                                            _drawerFolders.value = arrayListOf()
+                                        }
+                                    } else {
+                                        val dfs = arrayListOf<FolderInfo>()
+                                        val allAppsList =
+                                            context.getSystemService(LauncherApps::class.java)
+                                                .getActivityList(
+                                                    null,
+                                                    UserCache.INSTANCE.get(context).userProfiles.get(
+                                                        0
+                                                    )
+                                                )
+                                        folders.forEach {
+                                            val folderInfo = FolderInfo()
+                                            folderInfo.title = it.title
+                                            for (item in it.content) {
+                                                val info = model.getAppInfoForComponent(item)
+                                                if (info != null) {
+                                                    folderInfo.add(WorkspaceItemInfo(info), false)
+                                                }
+                                            }
+                                            dfs.add(folderInfo)
+                                        }
+                                        mainScope.launch {
+                                            _drawerFolders.postValue(dfs)
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                })
+            }
+
+        }
+
     }
 
     val dockSearchBarEnabled = setting(

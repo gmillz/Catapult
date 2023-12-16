@@ -98,6 +98,7 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ALL_APPS_DIVIDER, 1);
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ICON, approxRows
                 * (mNumAppsPerRow + 1));
+        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_FOLDER, approxRows * (mNumAppsPerRow + 1));
     }
 
     @Override

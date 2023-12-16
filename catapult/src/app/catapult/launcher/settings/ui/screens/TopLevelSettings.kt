@@ -31,7 +31,10 @@ val topLevelScreens = listOf(
     SettingsScreen("dock", R.string.dock_title) {
         DockScreen()
     },
-    SettingsScreen("drawer", R.string.drawer_title) {
+    SettingsScreen(
+        route = Routes.DRAWER,
+        labelRes = R.string.drawer_title,
+        screens = drawerScreens) {
         DrawerScreen()
     },
     SettingsScreen("folders", R.string.folder_title) {

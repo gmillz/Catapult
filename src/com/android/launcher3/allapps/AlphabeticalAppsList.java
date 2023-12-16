@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.model.data.AppInfo;
+import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
@@ -34,6 +35,10 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import app.catapult.launcher.CatapultAppKt;
+import app.catapult.launcher.data.drawer.DrawerFolderRepository;
+import app.catapult.launcher.model.DrawerFolderInfo;
 
 /**
  * The alphabetically sorted list of applications.
@@ -86,6 +91,8 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
 
+    private ArrayList<FolderInfo> mFolders = new ArrayList<>();
+
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore appsStore,
             WorkProfileManager workProfileManager) {
         mAllAppsStore = appsStore;
@@ -96,6 +103,12 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         if (mAllAppsStore != null) {
             mAllAppsStore.addUpdateListener(this);
         }
+
+        CatapultAppKt.getSettings().getDrawerFolders().observeForever(folderInfos -> {
+            mFolders.clear();
+            mFolders.addAll(folderInfos);
+            updateAdapterItems();
+        });
     }
 
     public void updateItemFilter(Predicate<ItemInfo> itemFilter) {
@@ -246,6 +259,15 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             }
             if (addApps) {
                 String lastSectionName = null;
+                for (FolderInfo info : mFolders) {
+                    String sectionName = "#";
+                    if (!sectionName.equals(lastSectionName)) {
+                        lastSectionName = sectionName;
+                        mFastScrollerSections.add(new FastScrollSectionInfo(sectionName, position));
+                    }
+                    mAdapterItems.add(AdapterItem.asFolder(info));
+                    position++;
+                }
                 for (AppInfo info : mApps) {
                     mAdapterItems.add(AdapterItem.asApp(info));
 

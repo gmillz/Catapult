@@ -26,6 +26,7 @@ import static com.android.launcher3.testing.shared.TestProtocol.testLogD;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
@@ -293,6 +294,15 @@ public class LauncherModel extends LauncherApps.Callback implements InstallSessi
     public void destroy() {
         mModelDestroyed = true;
         MODEL_EXECUTOR.execute(mModelDelegate::destroy);
+    }
+
+    public AppInfo getAppInfoForComponent(ComponentName component) {
+        for (AppInfo info : mBgAllAppsList.data) {
+            if (info.componentName.equals(component)) {
+                return info;
+            }
+        }
+        return null;
     }
 
     public void onBroadcastIntent(@NonNull final Intent intent) {

@@ -97,6 +97,8 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     private ObjectAnimator mStrokeAlphaAnimator;
     private ObjectAnimator mShadowAnimator;
 
+    private boolean isInDrawer;
+
     private static final Property<PreviewBackground, Integer> STROKE_ALPHA =
             new Property<PreviewBackground, Integer>(Integer.class, "strokeAlpha") {
                 @Override
@@ -124,6 +126,14 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
                     previewBackground.invalidate();
                 }
             };
+
+    public PreviewBackground() {
+        this(false);
+    }
+
+    public PreviewBackground(boolean inDrawer) {
+        isInDrawer = inDrawer;
+    }
 
     /**
      * Draws folder background under cell layout
@@ -157,7 +167,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
         ta.recycle();
 
         DeviceProfile grid = activity.getDeviceProfile();
-        previewSize = grid.folderIconSizePx;
+        previewSize = isInDrawer ? grid.allAppsIconSizePx - 10 : grid.folderIconSizePx;
 
         basePreviewOffsetX = (availableSpaceX - previewSize) / 2;
         basePreviewOffsetY = topPadding + grid.folderIconOffsetYPx;

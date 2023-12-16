@@ -92,4 +92,6 @@ object Routes {
     const val ICON_SHAPE = "icon_shape"
     const val HOME_SCREEN = "home_screen"
     const val HOME_SCREEN_GRID = "home_screen_grid"
+    const val DRAWER = "drawer"
+    const val DRAWER_FOLDERS = "drawer_folders"
 }

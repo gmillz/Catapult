@@ -1,7 +1,10 @@
 package app.catapult.launcher.settings.ui.components
 
 import android.graphics.Bitmap
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -11,12 +14,12 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import com.gmillz.compose.settings.ui.components.SettingTemplate
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppItem(
     label: String,
     icon: Bitmap,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    widget: (@Composable () -> Unit)? = null
 ) {
     SettingTemplate(
         title = label,
@@ -28,6 +31,36 @@ fun AppItem(
                 modifier = Modifier.size(34.dp)
             )
         },
+        endWidget = {
+            widget?.invoke()
+        },
         onClick = onClick
+    )
+}
+
+@Composable
+fun AppItemPlaceholder(
+    widget: (@Composable () -> Unit)? = null
+) {
+    SettingTemplate(
+        title = {
+            Spacer(modifier = Modifier
+                .width(120.dp)
+                .height(24.dp)
+                .placeholder(
+                    visible = true,
+                    highlight = PlaceholderHighlight.fade()
+                ))
+        },
+        startWidget = {
+            Spacer(
+                modifier = Modifier
+                    .size(30.dp)
+                    .placeholder(
+                        visible = true,
+                        highlight = PlaceholderHighlight.fade()
+                    )
+            )
+        }
     )
 }
