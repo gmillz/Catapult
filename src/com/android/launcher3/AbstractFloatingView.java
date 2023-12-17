@@ -51,7 +51,8 @@ import java.lang.annotation.RetentionPolicy;
  * Base class for a View which shows a floating UI on top of the launcher UI.
  */
 @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-public abstract class AbstractFloatingView extends LinearLayout implements TouchController {
+public abstract class AbstractFloatingView extends LinearLayout implements TouchController,
+        OnBackPressedHandler {
 
     @IntDef(flag = true, value = {
             TYPE_COMPOSE_VIEW,

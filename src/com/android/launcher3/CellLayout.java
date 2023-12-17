@@ -88,6 +88,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import app.catapult.launcher.CatapultAppKt;
 
@@ -2358,7 +2359,7 @@ public class CellLayout extends ViewGroup {
                         ((CellLayoutLayoutParams) ((View) view).getLayoutParams()).getCellX())
                 .thenComparing(view ->
                         ((CellLayoutLayoutParams) ((View) view).getLayoutParams()).getCellY());
-        List<View> views = solution.map.keySet().stream().sorted(comparator).toList();
+        List<View> views = (List<View>) solution.map.keySet().stream().sorted(comparator).collect(Collectors.toList());
         for (View child : views) {
             if (child == ignoreView) continue;
             CellAndSpan c = solution.map.get(child);

@@ -129,6 +129,7 @@ import android.window.BackEvent;
 import android.window.OnBackAnimationCallback;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -2132,9 +2133,69 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void onBackPressed() {
-        getOnBackAnimationCallback().onBackInvoked();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            getOnBackAnimationCallback().onBackInvoked();
+        } else {
+            getOnBackPressedHandler().onBackInvoked();
+        }
+    }
+
+    /**
+     * Provide {@link OnBackPressedHandler} in below order:
+     * <ol>
+     * <li>auto cancel action mode handler
+     * <li>drag handler
+     * <li>view handler
+     * <li>state handler
+     * </ol>
+     *
+     * A back gesture (a single click on back button, or a swipe back gesture that
+     * contains a series
+     * of swipe events) should be handled by the same handler from above list. For a
+     * new back
+     * gesture, a new handler should be regenerated.
+     *
+     * Note that state handler will always be handling the back press event if the
+     * previous 3 don't.
+     */
+    @NonNull
+    protected OnBackPressedHandler getOnBackPressedHandler() {
+        // #1 auto cancel action mode handler
+        if (isInAutoCancelActionMode()) {
+            return this::finishAutoCancelActionMode;
+        }
+
+        // #2 drag handler
+        if (mDragController.isDragging()) {
+            return mDragController::cancelDrag;
+        }
+
+        // #3 view handler
+        AbstractFloatingView topView = AbstractFloatingView.getTopOpenView(Launcher.this);
+        if (topView != null && topView.canHandleBack()) {
+            return topView;
+        }
+
+        // #4 state handler
+        return new OnBackPressedHandler() {
+            @Override
+            public void onBackInvoked() {
+                onStateBack();
+            }
+
+            @Override
+            public void onBackProgressed(
+                    @FloatRange(from = 0.0, to = 1.0) float backProgress) {
+                mStateManager.getState().onBackProgressed(
+                        Launcher.this, backProgress);
+            }
+
+            @Override
+            public void onBackCancelled() {
+                mStateManager.getState().onBackCancelled(Launcher.this);
+            }
+        };
     }
 
     protected void onStateBack() {

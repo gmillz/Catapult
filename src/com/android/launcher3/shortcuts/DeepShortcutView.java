@@ -25,10 +25,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import androidx.appcompat.widget.DrawableUtils;
 
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.Launcher;
@@ -38,6 +41,8 @@ import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BubbleTextHolder;
+
+import app.catapult.launcher.util.DrawableUtilsKt;
 
 /**
  * A {@link android.widget.FrameLayout} that contains an icon and a {@link BubbleTextView} for text.
@@ -102,7 +107,7 @@ public class DeepShortcutView extends FrameLayout implements BubbleTextHolder {
         GradientDrawable backgroundMask = new GradientDrawable();
         backgroundMask.setColor(color);
         backgroundMask.setShape(GradientDrawable.RECTANGLE);
-        if (background.getCornerRadii() != null) {
+        if (DrawableUtilsKt.getCornerRadiiCompat(background) != null) {
             backgroundMask.setCornerRadii(background.getCornerRadii());
         } else {
             backgroundMask.setCornerRadius(background.getCornerRadius());

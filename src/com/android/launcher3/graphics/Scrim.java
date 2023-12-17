@@ -19,6 +19,7 @@ package com.android.launcher3.graphics;
 import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
 
 import android.graphics.Canvas;
+import android.os.Build;
 import android.util.FloatProperty;
 import android.view.View;
 
@@ -50,7 +51,11 @@ public class Scrim {
 
     public Scrim(View view) {
         mRoot = view;
-        mScrimColor = mRoot.getContext().getColor(R.color.wallpaper_popup_scrim);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            mScrimColor = mRoot.getContext().getColor(R.color.wallpaper_popup_scrim);
+        } else {
+            mScrimColor = mRoot.getContext().getColor(R.color.material_color_primary);
+        }
     }
 
     public void draw(Canvas canvas) {
