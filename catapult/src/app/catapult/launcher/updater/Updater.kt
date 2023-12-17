@@ -11,7 +11,7 @@ import kotlin.concurrent.thread
 
 class ApkUpdater(private val activity: Activity, url: String) {
     private var response: String = get(url).text
-    private var threeNumbers: Boolean = false
+    public var threeNumbers: Boolean = true
 
     fun isNewUpdateAvailable(): Boolean? {
         val latestVersion = if (threeNumbers) {
