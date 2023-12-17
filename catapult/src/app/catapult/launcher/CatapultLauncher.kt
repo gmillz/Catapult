@@ -22,6 +22,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import app.catapult.launcher.data.overrides.ItemOverride
 import app.catapult.launcher.data.overrides.ItemOverrideRepository
 import app.catapult.launcher.popup.CatapultShortcut
+import app.catapult.launcher.updater.ApkUpdater
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherRootView
@@ -31,6 +32,9 @@ import com.android.launcher3.model.data.ItemInfoWithIcon
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.android.systemui.plugins.shared.LauncherOverlayManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.stream.Stream
 
@@ -146,6 +150,18 @@ class CatapultLauncher: Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         return runBlocking {
             ItemOverrideRepository.INSTANCE.get(this@CatapultLauncher)
                 .get(ComponentKey(info.targetComponent, info.user), info.container)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        CoroutineScope(Dispatchers.IO).launch {
+            val updater = ApkUpdater(this@CatapultLauncher, "https://github.com/gmillz/Catapult/releases/latest")
+            if (updater.isInternetConnection()) {
+                if (updater.isNewUpdateAvailable() == true) {
+                    updater.requestDownload()
+                }
+            }
         }
     }
 

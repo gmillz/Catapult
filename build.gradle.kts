@@ -156,6 +156,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.28.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
     implementation("com.google.accompanist:accompanist-flowlayout:0.20.0")
+    implementation("io.karn:khttp-android:0.1.2")
 
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")
