@@ -38,7 +38,7 @@ object Converters {
     fun stringToComponentNameList(data: String?): List<ComponentName> {
         if (data == null || data == "") return listOf()
 
-        val listType = object: TypeToken<List<String>>() {}.type
-        return Gson().fromJson<List<String>>(data, listType).map { ComponentName.unflattenFromString(it)!! }.distinct()
+        val listType = object: TypeToken<List<String>>() {}
+        return Gson().fromJson(data, listType).map { ComponentName.unflattenFromString(it)!! }.distinct()
     }
 }
