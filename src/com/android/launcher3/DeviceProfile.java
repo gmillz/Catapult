@@ -689,6 +689,10 @@ public class DeviceProfile {
                     + hotseatQsbVisualHeight
                     + hotseatBarBottomSpacePx;
         }
+
+        if (!CatapultAppKt.getSettings().getDockEnabled().firstBlocking()) {
+            hotseatBarSizePx = 0;
+        }
     }
 
     /**

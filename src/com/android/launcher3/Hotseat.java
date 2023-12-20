@@ -57,12 +57,16 @@ public class Hotseat extends CellLayout implements Insettable {
     public Hotseat(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
+        boolean hotseatEnabled = CatapultAppKt.getSettings().getDockEnabled().firstBlocking();
+
         mQsb = CatapultAppKt.getSettings().getDockSearchBarEnabled().firstBlocking()
             ? LayoutInflater.from(context).inflate(
                     R.layout.search_container_hotseat, this, false) :
             LayoutInflater.from(context).inflate(
                     R.layout.search_container_empty, this, false);
-        addView(mQsb);
+        if (hotseatEnabled) {
+            addView(mQsb);
+        }
     }
 
     /**

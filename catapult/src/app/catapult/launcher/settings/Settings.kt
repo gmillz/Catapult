@@ -56,6 +56,12 @@ class Settings(context: Context): BaseSettings(context) {
         onSet = { recreate() }
     )
 
+    val dockEnabled = setting(
+        key = booleanPreferencesKey("dock_enabled"),
+        defaultValue = true,
+        onSet = { recreate() }
+    )
+
     val twoRowDockEnabled = setting(
         key = booleanPreferencesKey("dock_two_row_enabled"),
         defaultValue = false,
